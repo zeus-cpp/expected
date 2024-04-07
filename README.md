@@ -1,2 +1,2 @@
-# expected
-Backporting std::expected to C++17.
+# `zeus::expected`
+Backporting `std::expected` to C++17.
