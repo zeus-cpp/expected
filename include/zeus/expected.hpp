@@ -287,8 +287,15 @@ namespace expected_detail
 
 struct no_init_t
 {
+    explicit no_init_t() = default;
 };
-static constexpr no_init_t no_init {};
+inline constexpr no_init_t no_init {};
+
+struct construct_with_invoke_result_t
+{
+    explicit construct_with_invoke_result_t() = default;
+};
+inline constexpr construct_with_invoke_result_t construct_with_invoke_result {};
 
 template<class T>
 struct [[nodiscard]] ReinitGuard
@@ -403,6 +410,24 @@ struct storage_base
     {
     }
 
+    // helper ctor for transform()
+    template<class Fn, class... Args>
+    constexpr explicit storage_base(construct_with_invoke_result_t, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<T>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : m_val(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))
+        , m_has_val(true)
+    {
+    }
+
+    // helper ctor for transform_error()
+    template<class Fn, class... Args>
+    constexpr explicit storage_base(construct_with_invoke_result_t, unexpect_t, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<E>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : m_unexpect(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))
+        , m_has_val(false)
+    {
+    }
+
     ~storage_base() = default;
 
     union
@@ -461,6 +486,24 @@ struct storage_base<T, E, false>
         noexcept(E(il, std::forward<Args>(args)...))
     )
         : m_unexpect(il, std::forward<Args>(args)...)
+        , m_has_val(false)
+    {
+    }
+
+    // helper ctor for transform()
+    template<class Fn, class... Args>
+    constexpr explicit storage_base(construct_with_invoke_result_t, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<T>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : m_val(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))
+        , m_has_val(true)
+    {
+    }
+
+    // helper ctor for transform_error()
+    template<class Fn, class... Args>
+    constexpr explicit storage_base(construct_with_invoke_result_t, unexpect_t, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<E>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : m_unexpect(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))
         , m_has_val(false)
     {
     }
@@ -531,6 +574,15 @@ struct storage_base<void, E, true>
     {
     }
 
+    // helper ctor for transform_error()
+    template<class Fn, class... Args>
+    constexpr explicit storage_base(construct_with_invoke_result_t, unexpect_t, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<E>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : m_unexpect(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))
+        , m_has_val(false)
+    {
+    }
+
     ~storage_base() = default;
 
     struct dummy
@@ -581,6 +633,15 @@ struct storage_base<void, E, false>
     template<class U, class... Args, std::enable_if_t<std::is_constructible_v<E, std::initializer_list<U> &, Args &&...>> * = nullptr>
     constexpr explicit storage_base(unexpect_t, std::initializer_list<U> il, Args &&...args)
         : m_unexpect(il, std::forward<Args>(args)...)
+        , m_has_val(false)
+    {
+    }
+
+    // helper ctor for transform_error()
+    template<class Fn, class... Args>
+    constexpr explicit storage_base(construct_with_invoke_result_t, unexpect_t, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<E>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : m_unexpect(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))
         , m_has_val(false)
     {
     }
@@ -1254,7 +1315,8 @@ public:
     //     expected(std::in_place_t, Args &&...)
 
     template<class... Args, std::enable_if_t<std::is_constructible_v<T, Args...>> * = nullptr>
-    constexpr explicit expected(std::in_place_t, Args &&...args) noexcept(std::is_nothrow_constructible_v<T, Args...>)
+    constexpr explicit expected(std::in_place_t, Args &&...args) //
+        noexcept(std::is_nothrow_constructible_v<T, Args...>)
         : impl_base(std::in_place, std::forward<Args>(args)...)
         , ctor_base(expected_detail::default_constructor_tag {})
     {
@@ -1264,10 +1326,18 @@ public:
     //     expected(std::in_place_t, std::initializer_list<U>, Args &&...)
 
     template<class U, class... Args, std::enable_if_t<std::is_constructible_v<T, std::initializer_list<U> &, Args...>> * = nullptr>
-    constexpr explicit expected(
-        std::in_place_t, std::initializer_list<U> il, Args &&...args
-    ) noexcept(std::is_nothrow_constructible_v<T, std::initializer_list<U> &, Args...>)
+    constexpr explicit expected(std::in_place_t, std::initializer_list<U> il, Args &&...args) //
+        noexcept(std::is_nothrow_constructible_v<T, std::initializer_list<U> &, Args...>)
         : impl_base(std::in_place, il, std::forward<Args>(args)...)
+        , ctor_base(expected_detail::default_constructor_tag {})
+    {
+    }
+
+    // helper ctor for transform()
+    template<class Fn, class... Args>
+    constexpr explicit expected(expected_detail::construct_with_invoke_result_t tag, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<T>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : impl_base(tag, std::forward<Fn>(func), std::forward<Args>(args)...)
         , ctor_base(expected_detail::default_constructor_tag {})
     {
     }
@@ -1276,7 +1346,8 @@ public:
     //     expected(unexpect_t, Args &&...)
 
     template<class... Args, std::enable_if_t<std::is_constructible_v<E, Args...>> * = nullptr>
-    constexpr explicit expected(unexpect_t, Args &&...args) noexcept(std::is_nothrow_constructible_v<E, Args...>)
+    constexpr explicit expected(unexpect_t, Args &&...args) //
+        noexcept(std::is_nothrow_constructible_v<E, Args...>)
         : impl_base(unexpect, std::forward<Args>(args)...)
         , ctor_base(expected_detail::default_constructor_tag {})
     {
@@ -1286,10 +1357,18 @@ public:
     //     expected(unexpect_t, std::initializer_list<U>, Args &&...)
 
     template<class U, class... Args, std::enable_if_t<std::is_constructible_v<E, std::initializer_list<U> &, Args...>> * = nullptr>
-    constexpr explicit expected(
-        unexpect_t, std::initializer_list<U> il, Args &&...args
-    ) noexcept(std::is_nothrow_constructible_v<E, std::initializer_list<U> &, Args...>)
+    constexpr explicit expected(unexpect_t, std::initializer_list<U> il, Args &&...args) //
+        noexcept(std::is_nothrow_constructible_v<E, std::initializer_list<U> &, Args...>)
         : impl_base(unexpect, il, std::forward<Args>(args)...)
+        , ctor_base(expected_detail::default_constructor_tag {})
+    {
+    }
+
+    // helper ctor for transform_error()
+    template<class Fn, class... Args>
+    constexpr explicit expected(expected_detail::construct_with_invoke_result_t tag1, unexpect_t tag2, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<E>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : impl_base(tag1, tag2, std::forward<Fn>(func), std::forward<Args>(args)...)
         , ctor_base(expected_detail::default_constructor_tag {})
     {
     }
@@ -1642,6 +1721,258 @@ public:
         }
     }
 
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, GE &>> * = nullptr>
+    constexpr auto and_then(F &&f) &
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype((this->m_val))>>;
+        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
+
+        if (has_value())
+            return std::invoke(std::forward<F>(f), this->m_val);
+        else
+            return U(unexpect, error());
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, const GE &>> * = nullptr>
+    constexpr auto and_then(F &&f) const &
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype((this->m_val))>>;
+        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
+
+        if (has_value())
+            return std::invoke(std::forward<F>(f), this->m_val);
+        else
+            return U(unexpect, error());
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, GE &&>> * = nullptr>
+    constexpr auto and_then(F &&f) &&
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(this->m_val))>>;
+        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<U::error_type, E>, "The error type must be the same after calling the F");
+
+        if (has_value())
+            return std::invoke(std::forward<F>(f), std::move(this->m_val));
+        else
+            return U(unexpect, std::move(error()));
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, const GE>> * = nullptr>
+    constexpr auto and_then(F &&f) const &&
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(this->m_val))>>;
+        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<U::error_type, E>, "The error type must be the same after calling the F");
+
+        if (has_value())
+            return std::invoke(std::forward<F>(f), std::move(this->m_val));
+        else
+            return U(unexpect, std::move(error()));
+    }
+
+    template<class F, class UT = T, std::enable_if_t<std::is_constructible_v<UT, UT &>> * = nullptr>
+    constexpr auto or_else(F &&f) &
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
+        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
+
+        if (has_value())
+            return G(std::in_place, this->m_val);
+        else
+            return std::invoke(std::forward<F>(f), error());
+    }
+    template<class F, class UT = T, std::enable_if_t<std::is_constructible_v<UT, const UT &>> * = nullptr>
+    constexpr auto or_else(F &&f) const &
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
+        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
+
+        if (has_value())
+            return G(std::in_place, this->m_val);
+        else
+            return std::invoke(std::forward<F>(f), error());
+    }
+    template<class F, class UT = T, std::enable_if_t<std::is_constructible_v<UT, UT &&>> * = nullptr>
+    constexpr auto or_else(F &&f) &&
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
+        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
+
+        if (has_value())
+            return G(std::in_place, std::move(this->m_val));
+        else
+            return std::invoke(std::forward<F>(f), std::move(error()));
+    }
+    template<class F, class UT = T, std::enable_if_t<std::is_constructible_v<UT, const UT>> * = nullptr>
+    constexpr auto or_else(F &&f) const &&
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
+        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
+
+        if (has_value())
+            return G(std::in_place, std::move(this->m_val));
+        else
+            return std::invoke(std::forward<F>(f), std::move(error()));
+    }
+
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, GE &>> * = nullptr>
+    constexpr auto transform(F &&f) &
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype((this->m_val))>>;
+        static_assert(expected_detail::is_value_type_valid_v<U>, "U must be a valid type for expected<U, E>");
+        // FIXME another constraint needed here
+        if (!has_value())
+        {
+            return expected<U, E>(unexpect, error());
+        }
+        else
+        {
+            if constexpr (std::is_void_v<U>)
+            {
+                std::invoke(std::forward<F>(f), this->m_val);
+                return expected<U, E> {};
+            }
+            else
+            {
+                return expected<U, E>(expected_detail::construct_with_invoke_result_t {}, std::forward<F>(f), this->m_val);
+            }
+        }
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, const GE &>> * = nullptr>
+    constexpr auto transform(F &&f) const &
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype((this->m_val))>>;
+        static_assert(expected_detail::is_value_type_valid_v<U>, "U must be a valid type for expected<U, E>");
+        // FIXME another constraint needed here
+        if (!has_value())
+        {
+            return expected<U, E>(unexpect, error());
+        }
+        else
+        {
+            if constexpr (std::is_void_v<U>)
+            {
+                std::invoke(std::forward<F>(f), this->m_val);
+                return expected<U, E> {};
+            }
+            else
+            {
+                return expected<U, E>(expected_detail::construct_with_invoke_result_t {}, std::forward<F>(f), this->m_val);
+            }
+        }
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, GE &&>> * = nullptr>
+    constexpr auto transform(F &&f) &&
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(this->m_val))>>;
+        static_assert(expected_detail::is_value_type_valid_v<U>, "U must be a valid type for expected<U, E>");
+        // FIXME another constraint needed here
+        if (!has_value())
+        {
+            return expected<U, E>(unexpect, std::move(error()));
+        }
+        else
+        {
+            if constexpr (std::is_void_v<U>)
+            {
+                std::invoke(std::forward<F>(f), std::move(this->m_val));
+                return expected<U, E> {};
+            }
+            else
+            {
+                return expected<U, E>(expected_detail::construct_with_invoke_result_t {}, std::forward<F>(f), std::move(this->m_val));
+            }
+        }
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, const GE>> * = nullptr>
+    constexpr auto transform(F &&f) const &&
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(this->m_val))>>;
+        static_assert(expected_detail::is_value_type_valid_v<U>, "U must be a valid type for expected<U, E>");
+        // FIXME another constraint needed here
+        if (!has_value())
+        {
+            return expected<U, E>(unexpect, std::move(error()));
+        }
+        else
+        {
+            if constexpr (std::is_void_v<U>)
+            {
+                std::invoke(std::forward<F>(f), std::move(this->m_val));
+                return expected<U, E> {};
+            }
+            else
+            {
+                return expected<U, E>(expected_detail::construct_with_invoke_result_t {}, std::forward<F>(f), std::move(this->m_val));
+            }
+        }
+    }
+
+    template<class F, class UT = T, std::enable_if_t<std::is_constructible_v<UT, UT &>> * = nullptr>
+    constexpr auto transform_error(F &&f) &
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
+        static_assert(expected_detail::is_error_type_valid_v<G>, "G must be a valid type for expected<T, G>");
+        // FIXME another constraint needed here
+        if (has_value())
+        {
+            return expected<T, G>(std::in_place, this->m_val);
+        }
+        else
+        {
+            return expected<T, G>(expected_detail::construct_with_invoke_result_t {}, unexpect, std::forward<F>(f), error());
+        }
+    }
+    template<class F, class UT = T, std::enable_if_t<std::is_constructible_v<UT, const UT &>> * = nullptr>
+    constexpr auto transform_error(F &&f) const &
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
+        static_assert(expected_detail::is_error_type_valid_v<G>, "G must be a valid type for expected<T, G>");
+        // FIXME another constraint needed here
+        if (has_value())
+        {
+            return expected<T, G>(std::in_place, this->m_val);
+        }
+        else
+        {
+            return expected<T, G>(expected_detail::construct_with_invoke_result_t {}, unexpect, std::forward<F>(f), error());
+        }
+    }
+    template<class F, class UT = T, std::enable_if_t<std::is_constructible_v<UT, UT &&>> * = nullptr>
+    constexpr auto transform_error(F &&f) &&
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
+        static_assert(expected_detail::is_error_type_valid_v<G>, "G must be a valid type for expected<T, G>");
+        // FIXME another constraint needed here
+        if (has_value())
+        {
+            return expected<T, G>(std::in_place, std::move(this->m_val));
+        }
+        else
+        {
+            return expected<T, G>(expected_detail::construct_with_invoke_result_t {}, unexpect, std::forward<F>(f), std::move(error()));
+        }
+    }
+    template<class F, class UT = T, std::enable_if_t<std::is_constructible_v<UT, const UT>> * = nullptr>
+    constexpr auto transform_error(F &&f) const &&
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
+        static_assert(expected_detail::is_error_type_valid_v<G>, "G must be a valid type for expected<T, G>");
+        // FIXME another constraint needed here
+        if (has_value())
+        {
+            return expected<T, G>(std::in_place, std::move(this->m_val));
+        }
+        else
+        {
+            return expected<T, G>(expected_detail::construct_with_invoke_result_t {}, unexpect, std::forward<F>(f), std::move(error()));
+        }
+    }
+
     template<class T2, class E2>
     [[nodiscard]] friend constexpr std::enable_if_t<!std::is_void_v<T2>, bool> operator==(const expected &x, const expected<T2, E2> &y) //
         noexcept(noexcept(*x == *y) && noexcept(x.error() == y.error()))
@@ -1902,6 +2233,15 @@ public:
     {
     }
 
+    // helper ctor for transform_error()
+    template<class Fn, class... Args>
+    constexpr explicit expected(expected_detail::construct_with_invoke_result_t tag1, unexpect_t tag2, Fn &&func, Args &&...args) //
+        noexcept(noexcept(static_cast<E>(std::invoke(std::forward<Fn>(func), std::forward<Args>(args)...))))
+        : impl_base(tag1, tag2, std::forward<Fn>(func), std::forward<Args>(args)...)
+        , ctor_base(expected_detail::default_constructor_tag {})
+    {
+    }
+
     expected &operator=(const expected &rhs) = default;
     expected &operator=(expected &&rhs)      = default;
 
@@ -2069,6 +2409,258 @@ public:
         else
         {
             return std::move(this->m_unexpect);
+        }
+    }
+
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, GE &>> * = nullptr>
+    constexpr auto and_then(F &&f) &
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
+        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
+
+        if (has_value())
+            return std::invoke(std::forward<F>(f));
+        else
+            return U(unexpect, error());
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, const GE &>> * = nullptr>
+    constexpr auto and_then(F &&f) const &
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
+        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
+
+        if (has_value())
+            return std::invoke(std::forward<F>(f));
+        else
+            return U(unexpect, error());
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, GE &&>> * = nullptr>
+    constexpr auto and_then(F &&f) &&
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
+        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<U::error_type, E>, "The error type must be the same after calling the F");
+
+        if (has_value())
+            return std::invoke(std::forward<F>(f));
+        else
+            return U(unexpect, std::move(error()));
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, const GE>> * = nullptr>
+    constexpr auto and_then(F &&f) const &&
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
+        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<U::error_type, E>, "The error type must be the same after calling the F");
+
+        if (has_value())
+            return std::invoke(std::forward<F>(f));
+        else
+            return U(unexpect, std::move(error()));
+    }
+
+    template<class F>
+    constexpr auto or_else(F &&f) &
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
+        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
+
+        if (has_value())
+            return G();
+        else
+            return std::invoke(std::forward<F>(f), error());
+    }
+    template<class F>
+    constexpr auto or_else(F &&f) const &
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
+        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
+
+        if (has_value())
+            return G();
+        else
+            return std::invoke(std::forward<F>(f), error());
+    }
+    template<class F>
+    constexpr auto or_else(F &&f) &&
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
+        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
+
+        if (has_value())
+            return G();
+        else
+            return std::invoke(std::forward<F>(f), std::move(error()));
+    }
+    template<class F>
+    constexpr auto or_else(F &&f) const &&
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
+        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
+
+        if (has_value())
+            return G();
+        else
+            return std::invoke(std::forward<F>(f), std::move(error()));
+    }
+
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, GE &>> * = nullptr>
+    constexpr auto transform(F &&f) &
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
+        static_assert(expected_detail::is_value_type_valid_v<U>, "U must be a valid type for expected<U, E>");
+        // FIXME another constraint needed here
+        if (!has_value())
+        {
+            return expected<U, E>(unexpect, error());
+        }
+        else
+        {
+            if constexpr (std::is_void_v<U>)
+            {
+                std::invoke(std::forward<F>(f));
+                return expected<U, E> {};
+            }
+            else
+            {
+                return expected<U, E>(expected_detail::construct_with_invoke_result_t {}, std::forward<F>(f));
+            }
+        }
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, const GE &>> * = nullptr>
+    constexpr auto transform(F &&f) const &
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
+        static_assert(expected_detail::is_value_type_valid_v<U>, "U must be a valid type for expected<U, E>");
+        // FIXME another constraint needed here
+        if (!has_value())
+        {
+            return expected<U, E>(unexpect, error());
+        }
+        else
+        {
+            if constexpr (std::is_void_v<U>)
+            {
+                std::invoke(std::forward<F>(f));
+                return expected<U, E> {};
+            }
+            else
+            {
+                return expected<U, E>(expected_detail::construct_with_invoke_result_t {}, std::forward<F>(f));
+            }
+        }
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, GE &&>> * = nullptr>
+    constexpr auto transform(F &&f) &&
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
+        static_assert(expected_detail::is_value_type_valid_v<U>, "U must be a valid type for expected<U, E>");
+        // FIXME another constraint needed here
+        if (!has_value())
+        {
+            return expected<U, E>(unexpect, std::move(error()));
+        }
+        else
+        {
+            if constexpr (std::is_void_v<U>)
+            {
+                std::invoke(std::forward<F>(f));
+                return expected<U, E> {};
+            }
+            else
+            {
+                return expected<U, E>(expected_detail::construct_with_invoke_result_t {}, std::forward<F>(f));
+            }
+        }
+    }
+    template<class F, class GE = E, std::enable_if_t<std::is_constructible_v<GE, const GE>> * = nullptr>
+    constexpr auto transform(F &&f) const &&
+    {
+        using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
+        static_assert(expected_detail::is_value_type_valid_v<U>, "U must be a valid type for expected<U, E>");
+        // FIXME another constraint needed here
+        if (!has_value())
+        {
+            return expected<U, E>(unexpect, std::move(error()));
+        }
+        else
+        {
+            if constexpr (std::is_void_v<U>)
+            {
+                std::invoke(std::forward<F>(f));
+                return expected<U, E> {};
+            }
+            else
+            {
+                return expected<U, E>(expected_detail::construct_with_invoke_result_t {}, std::forward<F>(f));
+            }
+        }
+    }
+
+    template<class F>
+    constexpr auto transform_error(F &&f) &
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
+        static_assert(expected_detail::is_error_type_valid_v<G>, "G must be a valid type for expected<void, G>");
+        // FIXME another constraint needed here
+        if (has_value())
+        {
+            return expected<T, G>();
+        }
+        else
+        {
+            return expected<T, G>(expected_detail::construct_with_invoke_result_t {}, unexpect, std::forward<F>(f), error());
+        }
+    }
+    template<class F>
+    constexpr auto transform_error(F &&f) const &
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
+        static_assert(expected_detail::is_error_type_valid_v<G>, "G must be a valid type for expected<void, G>");
+        // FIXME another constraint needed here
+        if (has_value())
+        {
+            return expected<T, G>();
+        }
+        else
+        {
+            return expected<T, G>(expected_detail::construct_with_invoke_result_t {}, unexpect, std::forward<F>(f), error());
+        }
+    }
+    template<class F>
+    constexpr auto transform_error(F &&f) &&
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
+        static_assert(expected_detail::is_error_type_valid_v<G>, "G must be a valid type for expected<void, G>");
+        // FIXME another constraint needed here
+        if (has_value())
+        {
+            return expected<T, G>();
+        }
+        else
+        {
+            return expected<T, G>(expected_detail::construct_with_invoke_result_t {}, unexpect, std::forward<F>(f), std::move(error()));
+        }
+    }
+    template<class F>
+    constexpr auto transform_error(F &&f) const &&
+    {
+        using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
+        static_assert(expected_detail::is_error_type_valid_v<G>, "G must be a valid type for expected<void, G>");
+        // FIXME another constraint needed here
+        if (has_value())
+        {
+            return expected<T, G>();
+        }
+        else
+        {
+            return expected<T, G>(expected_detail::construct_with_invoke_result_t {}, unexpect, std::forward<F>(f), std::move(error()));
         }
     }
 
