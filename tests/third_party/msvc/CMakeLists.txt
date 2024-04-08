@@ -1,0 +1,1 @@
+add_subdirectory(msvc_stl_p0323r12_test)

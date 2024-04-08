@@ -1,0 +1,241 @@
+---
+Language: Cpp
+
+AccessModifierOffset: -4
+
+AlignAfterOpenBracket:        BlockIndent
+AlignArrayOfStructures:       Left
+AlignConsecutiveAssignments:  AcrossComments
+AlignConsecutiveBitFields:    AcrossComments
+AlignConsecutiveDeclarations: AcrossComments
+AlignConsecutiveMacros:       AcrossComments
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCaseColons: false
+AlignEscapedNewlines:         Left
+AlignOperands:                AlignAfterOperator
+AlignTrailingComments:
+  Kind:           Always
+  OverEmptyLines: 0
+
+AllowAllArgumentsOnNextLine:                true
+AllowAllConstructorInitializersOnNextLine:  true
+AllowAllParametersOfDeclarationOnNextLine:  true
+
+AllowShortBlocksOnASingleLine:        Empty
+AllowShortCaseLabelsOnASingleLine:    false
+AllowShortEnumsOnASingleLine:         true
+AllowShortFunctionsOnASingleLine:     InlineOnly
+AllowShortIfStatementsOnASingleLine:  Never
+AllowShortLambdasOnASingleLine:       Inline
+AllowShortLoopsOnASingleLine:         false
+
+AlwaysBreakAfterReturnType:         None
+AlwaysBreakBeforeMultilineStrings:  true
+AlwaysBreakTemplateDeclarations:    Yes
+
+AttributeMacros:
+  - __capability
+  - __output
+  - __ununsed
+  - GSL_SUPPRESS
+
+BinPackArguments:   false
+BinPackParameters:  false
+
+BitFieldColonSpacing: Both
+BraceWrapping:
+  AfterCaseLabel:         true
+  AfterClass:             true
+  AfterControlStatement:  Always
+  AfterEnum:              true
+  AfterFunction:          true
+  AfterNamespace:         true
+  AfterObjCDeclaration:   true
+  AfterStruct:            true
+  AfterUnion:             true
+  AfterExternBlock:       true
+  BeforeCatch:      true
+  BeforeElse:       true
+  BeforeLambdaBody: true
+  BeforeWhile:      true
+  IndentBraces: false
+  SplitEmptyFunction:   true
+  SplitEmptyRecord:     true
+  SplitEmptyNamespace:  true
+BracedInitializerIndentWidth: 4 # clang-format 17
+BreakAfterAttributes: Leave
+BreakBeforeBinaryOperators:     None # TBD
+BreakBeforeBraces:              Custom
+BreakBeforeConceptDeclarations: Always
+BreakBeforeInlineASMColon:      Always
+BreakBeforeTernaryOperators:    false
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+BreakStringLiterals: true
+
+ColumnLimit: 140
+CommentPragmas: "^ IWYU pragma:" # TBD`
+CompactNamespaces: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+Cpp11BracedListStyle: true
+
+DeriveLineEnding: true
+DerivePointerAlignment: true
+
+DisableFormat: false
+EmptyLineAfterAccessModifier: Leave
+EmptyLineBeforeAccessModifier: Leave
+FixNamespaceComments: true
+ForEachMacros:
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+IfMacros: [] # A vector of macros that should be interpreted as conditionals instead of as function calls
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex:        '^"(llvm|llvm-c|clang|clang-c)/'
+    Priority:     2
+    SortPriority: 0
+  - Regex:        '^(<|"(gtest|gmock|isl|json)/)'
+    Priority:     3
+    SortPriority: 0
+  - Regex:        ".*"
+    Priority:     1
+    SortPriority: 0
+IncludeIsMainRegex: "(Test)?$"
+IncludeIsMainSourceRegex: ""
+
+IndentAccessModifiers:      false
+IndentCaseBlocks:           false
+IndentCaseLabels:           false
+IndentExternBlock:          NoIndent
+IndentGotoLabels:           false
+IndentPPDirectives:         BeforeHash
+IndentRequiresClause:       true
+IndentWidth: 4
+IndentWrappedFunctionNames: false
+InsertBraces:               false # not safe if true
+InsertNewlineAtEOF:         true
+
+IntegerLiteralSeparator:
+  Binary: 4
+  Decimal: 3
+  Hex: 2
+
+LineEnding: DeriveLF
+
+KeepEmptyLinesAtEOF: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+LambdaBodyIndentation: Signature
+Macros: [] # TBD
+MacroBlockBegin:  "" # TBD
+MacroBlockEnd:    "" # TBD
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+NamespaceMacros: [] # TBD A vector of macros which are used to open namespace blocks.
+
+PPIndentWidth: -1 # default to IndentWidth
+PackConstructorInitializers: Never
+
+# Penalty is hard to understand, leave it to default
+#PenaltyBreakAssignment: 2
+#PenaltyBreakBeforeFirstCallParameter: 19
+#PenaltyBreakComment: 300
+#PenaltyBreakFirstLessLess: 120
+#PenaltyBreakOpenParenthesis: 0
+#PenaltyBreakString: 1000
+#PenaltyBreakTemplateDeclaration: 10
+#PenaltyExcessCharacter: 1000000
+#PenaltyIndentedWhitespace: 0
+#PenaltyReturnTypeOnItsOwnLine: 6000
+
+PointerAlignment: Left
+
+QualifierAlignment: Leave # not safe unless default
+
+RawStringFormats: [] # TBD
+
+ReferenceAlignment: Left
+
+ReflowComments: false
+
+RemoveSemicolon: false # not safe if true
+
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+
+ShortNamespaceLines: 20
+
+SortIncludes:           Never
+SortUsingDeclarations:  false
+
+SpaceAfterCStyleCast:       true
+SpaceAfterLogicalNot:       false
+SpaceAfterTemplateKeyword:  false
+
+SpaceAroundPointerQualifiers: Default
+
+SpaceBeforeAssignmentOperators:     true
+SpaceBeforeCaseColon:               false
+SpaceBeforeCpp11BracedList:         true
+SpaceBeforeCtorInitializerColon:    true
+SpaceBeforeInheritanceColon:        true
+SpaceBeforeParens:                  Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements:       true
+  AfterForeachMacros:           false
+  AfterFunctionDefinitionName:  false
+  AfterFunctionDeclarationName: false
+  AfterIfMacros:                true
+  AfterOverloadedOperator:      false
+  AfterRequiresInClause:        true
+  AfterRequiresInExpression:    false
+  BeforeNonEmptyParentheses:    false
+SpaceBeforeRangeBasedForLoopColon:  true
+SpaceBeforeSquareBrackets:          false
+
+SpaceInEmptyBlock:        false
+SpaceInEmptyParentheses:  false
+
+SpacesBeforeTrailingComments: 1
+
+SpacesInAngles:                 Never # TBD
+SpacesInCStyleCastParentheses:  false
+SpacesInConditionalStatement:   false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: -1
+SpacesInParens: Custom
+SpacesInParensOptions:
+  InConditionalStatements: false
+  InCStyleCasts: false
+  InEmptyParentheses: false
+  Other: false
+SpacesInParentheses:            false
+SpacesInSquareBrackets:         false
+
+Standard: c++20
+StatementAttributeLikeMacros:
+  - emit
+StatementMacros:
+  - Q_UNUSED
+  - QT_REQUIRE_VERSION
+TabWidth: 4
+TypeNames: [] # TBD
+TypenameMacros: [] # TBD
+UseCRLF: false
+UseTab: Never
+WhitespaceSensitiveMacros:
+  - STRINGIZE
+  - PP_STRINGIZE
+  - BOOST_PP_STRINGIZE
+
+---
+Language: Json
+BreakArrays: false
+SpaceBeforeJsonColon: false
