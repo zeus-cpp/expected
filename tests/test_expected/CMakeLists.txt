@@ -13,6 +13,7 @@ target_link_libraries(${PROJECT_NAME} Catch2::Catch2)
 target_sources(${PROJECT_NAME}
     PRIVATE
         base_tests.cpp
+        monadic_tests.cpp
         test_expected_main.cpp
 )
 
@@ -29,6 +30,7 @@ target_link_libraries(${PROJECT_NAME}_cpp20 Catch2::Catch2)
 target_sources(${PROJECT_NAME}_cpp20
     PRIVATE
         base_tests.cpp
+        monadic_tests.cpp
         test_expected_main.cpp
 )
 
@@ -45,5 +47,6 @@ target_link_libraries(${PROJECT_NAME}_cpp23 Catch2::Catch2)
 target_sources(${PROJECT_NAME}_cpp23
     PRIVATE
         base_tests.cpp
+        monadic_tests.cpp
         test_expected_main.cpp
 )
