@@ -1,52 +1,29 @@
 project(test_expected)
 
-# [=== C++17 ===]
-
-add_executable(${PROJECT_NAME})
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
-
-target_link_libraries(${PROJECT_NAME} zeus::expected)
-
-find_package(Catch2 REQUIRED)
-target_link_libraries(${PROJECT_NAME} Catch2::Catch2)
-
-target_sources(${PROJECT_NAME}
-    PRIVATE
-        base_tests.cpp
-        monadic_tests.cpp
-        test_expected_main.cpp
+set(SOURCES
+    base_tests.cpp
+    monadic_tests.cpp
+    test_expected_main.cpp
 )
 
-# [=== C++20 ===]
+function(add_test_expected CPP_STANDARD)
+    set(TARGET_NAME ${PROJECT_NAME}_cpp${CPP_STANDARD})
 
-add_executable(${PROJECT_NAME}_cpp20)
-set_target_properties(${PROJECT_NAME}_cpp20 PROPERTIES CXX_STANDARD 20)
+    add_executable(${TARGET_NAME})
+    set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD ${CPP_STANDARD})
 
-target_link_libraries(${PROJECT_NAME}_cpp20 zeus::expected)
+    target_link_libraries(${TARGET_NAME} zeus::expected)
 
-find_package(Catch2 REQUIRED)
-target_link_libraries(${PROJECT_NAME}_cpp20 Catch2::Catch2)
+    find_package(Catch2 REQUIRED)
+    target_link_libraries(${TARGET_NAME} Catch2::Catch2)
 
-target_sources(${PROJECT_NAME}_cpp20
-    PRIVATE
-        base_tests.cpp
-        monadic_tests.cpp
-        test_expected_main.cpp
-)
+    target_sources(${TARGET_NAME} PRIVATE ${SOURCES})
+endfunction()
 
-# [=== C++23 ===]
-
-add_executable(${PROJECT_NAME}_cpp23)
-set_target_properties(${PROJECT_NAME}_cpp23 PROPERTIES CXX_STANDARD 23)
-
-target_link_libraries(${PROJECT_NAME}_cpp23 zeus::expected)
-
-find_package(Catch2 REQUIRED)
-target_link_libraries(${PROJECT_NAME}_cpp23 Catch2::Catch2)
-
-target_sources(${PROJECT_NAME}_cpp23
-    PRIVATE
-        base_tests.cpp
-        monadic_tests.cpp
-        test_expected_main.cpp
-)
+add_test_expected(17)
+if (cxx_std_20 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    add_test_expected(20)
+endif ()
+if (cxx_std_23 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    add_test_expected(23)
+endif ()
