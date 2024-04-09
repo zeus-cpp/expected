@@ -36,8 +36,7 @@ Table of known compiler status.
 | Planned             | Status          | Note                          |
 | ------------------- | --------------- | ----------------------------- |
 | MSVC v142 and later | Fully tested    | `/Zc:__cplusplus` is required |
-| GCC 8               | Not compiled    |                               |
-| GCC 9 and later     | Slightly tested |                               |
+| GCC 8 and later     | Slightly tested |                               |
 
 ## Building and testing
 
