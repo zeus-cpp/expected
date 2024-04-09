@@ -39,6 +39,21 @@ Table of known compiler status.
 | GCC 8               | Not compiled    |                               |
 | GCC 9 and later     | Slightly tested |                               |
 
+## Building and testing
+
+[Catch2](https://github.com/catchorg/Catch2) is required to build the tests.
+You may choose any preferred package manager to introduce the requirements. Here is the `conan` one.
+
+```
+# install the requirements
+conan install . -s build_type=Debug -b missing
+# glance the cmake preset names
+cmake --list-presets
+cmake --build --list-presets
+ctest --list-presets
+# configure, build and test per preset names
+```
+
 ## Acknowledgements
 
 + [tl-expected](https://github.com/TartanLlama/expected), the original code base this library came from.
