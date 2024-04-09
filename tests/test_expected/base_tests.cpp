@@ -166,12 +166,37 @@ TEST_CASE("swap", "[swap]")
     CHECK(e2.value() == 1'337);
 }
 
-TEST_CASE("brace constructed value", "[brace_constructed_value]")
+TEST_CASE("copy-list-initialization", "[copy-initialization]")
 {
-#if !defined(__GNUC__) // GCC bug
-    expected<std::string, int> e {{}};
-    CHECK(e);
+    {
+        expected<std::string, int> e = {};
+        CHECK(e);
+    }
+}
+
+TEST_CASE("brace constructed value", "[brace-constructed-value]")
+{
+    { // non-void
+        expected<int, int> e {{}};
+        CHECK(e);
+    }
+    { // std::string
+#if !defined(__GNUC__)
+        // This case doesn't work and needs clarification:
+        //   * an implementation bug
+        //   + a GCC bug?
+        //   + a language bug?
+        //   + a MSVC bug?
+        // see CWG-1228(NAD), CWG-2735(DR), CWG-2856(DR)
+        // see https://github.com/cplusplus/CWG/issues/486
+        // see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59389
+        // see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=60027
+        // see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=109247
+        // see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=113300
+        expected<std::string, int> e {{}};
+        CHECK(e);
 #endif
+    }
 }
 
 TEST_CASE("LWG-3836", "[LWG-3836]")
