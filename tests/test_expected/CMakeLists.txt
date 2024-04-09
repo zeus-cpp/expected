@@ -18,6 +18,9 @@ function(add_test_expected CPP_STANDARD)
     target_link_libraries(${TARGET_NAME} Catch2::Catch2)
 
     target_sources(${TARGET_NAME} PRIVATE ${SOURCES})
+
+    include(Catch)
+    catch_discover_tests(${TARGET_NAME})
 endfunction()
 
 add_test_expected(17)

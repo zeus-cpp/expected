@@ -8,3 +8,5 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         msvc_stl_p2505r5_test.cpp
 )
+
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})

@@ -24,4 +24,7 @@ install(EXPORT ${PROJECT_NAME}-targets DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmak
     COMPONENT Development EXCLUDE_FROM_ALL
 )
 
-add_subdirectory(tests)
+include(CTest)
+if (BUILD_TESTING)
+    add_subdirectory(tests)
+endif ()
