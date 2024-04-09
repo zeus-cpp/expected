@@ -676,7 +676,7 @@ struct operations_base : storage_base<T, E>
 
     template<class... Args>
     constexpr void construct(Args &&...args) //
-        noexcept(noexcept(expected_detail::construct_at(&this->m_val, std::forward<Args>(args)...)))
+        noexcept(std::is_nothrow_constructible_v<T, Args...>)
     {
         expected_detail::construct_at(&this->m_val, std::forward<Args>(args)...);
         this->m_has_val = true;
@@ -684,7 +684,7 @@ struct operations_base : storage_base<T, E>
 
     template<class Rhs>
     constexpr void construct_with(Rhs &&rhs) //
-        noexcept(noexcept(expected_detail::construct_at(&this->m_val, std::forward<Rhs>(rhs).get())))
+        noexcept(std::is_nothrow_constructible_v<T, Rhs>)
     {
         expected_detail::construct_at(&this->m_val, std::forward<Rhs>(rhs).get());
         this->m_has_val = true;
@@ -692,7 +692,7 @@ struct operations_base : storage_base<T, E>
 
     template<class... Args>
     constexpr void construct_error(Args &&...args) //
-        noexcept(noexcept(expected_detail::construct_at(&this->m_unexpect, std::forward<Args>(args)...)))
+        noexcept(std::is_nothrow_constructible_v<E, Args...>)
     {
         expected_detail::construct_at(&this->m_unexpect, std::forward<Args>(args)...);
         this->m_has_val = false;
@@ -728,7 +728,7 @@ struct operations_base<void, E> : storage_base<void, E>
 
     template<class... Args>
     constexpr void construct_error(Args &&...args) //
-        noexcept(noexcept(expected_detail::construct_at(&this->m_unexpect, std::forward<Args>(args)...)))
+        noexcept(std::is_nothrow_constructible_v<E, Args...>)
     {
         expected_detail::construct_at(&this->m_unexpect, std::forward<Args>(args)...);
         this->m_has_val = false;
