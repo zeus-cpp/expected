@@ -6,6 +6,10 @@
 #include <type_traits>
 #include <utility>
 
+#define ZEUS_EXPECTED_VERSION_MAJOR 1
+#define ZEUS_EXPECTED_VERSION_MINOR 0
+#define ZEUS_EXPECTED_VERSION_PATCH 0
+
 #if __cplusplus < 201'703L
 static_assert(false, "This expected variant requires C++17");
 #endif
@@ -16,8 +20,32 @@ static_assert(false, "This expected variant requires C++17");
     #define ZEUS_EXPECTED_CONSTEXPR_DTOR
 #endif
 
-namespace zeus
-{
+#define ZEUS_EXPECTED_ABI_TAG expected_abi
+
+#define ZEUS_EXPECTED_NS_VERSION_CONCAT_EX(major, minor, patch) _v##major##_##minor##_##patch
+#define ZEUS_EXPECTED_NS_VERSION_CONCAT(major, minor, patch)    ZEUS_EXPECTED_NS_VERSION_CONCAT_EX(major, minor, patch)
+
+#define ZEUS_EXPECTED_NS_VERSION \
+    ZEUS_EXPECTED_NS_VERSION_CONCAT(ZEUS_EXPECTED_VERSION_MAJOR, ZEUS_EXPECTED_VERSION_MINOR, ZEUS_EXPECTED_VERSION_PATCH)
+
+#define ZEUS_EXPECTED_NS_CONCAT_EX(a, b) a##b
+#define ZEUS_EXPECTED_NS_CONCAT(a, b)    ZEUS_EXPECTED_NS_CONCAT_EX(a, b)
+
+#ifndef ZEUS_EXPECTED_NAMESPACE
+    #define ZEUS_EXPECTED_NAMESPACE zeus::ZEUS_EXPECTED_NS_CONCAT(ZEUS_EXPECTED_ABI_TAG, ZEUS_EXPECTED_NS_VERSION)
+#endif
+
+#define ZEUS_EXPECTED_NS_BEGIN                                                                \
+    namespace zeus                                                                            \
+    {                                                                                         \
+    inline namespace ZEUS_EXPECTED_NS_CONCAT(ZEUS_EXPECTED_ABI_TAG, ZEUS_EXPECTED_NS_VERSION) \
+    {
+
+#define ZEUS_EXPECTED_NS_END \
+    }                        \
+    }
+
+ZEUS_EXPECTED_NS_BEGIN
 
 namespace expected_detail
 {
@@ -2714,6 +2742,6 @@ constexpr void swap(expected<void, E> &lhs, expected<void, E> &rhs) noexcept(noe
     lhs.swap(rhs);
 }
 
-} // namespace zeus
+ZEUS_EXPECTED_NS_END
 
 #endif
