@@ -1778,7 +1778,7 @@ public:
     {
         using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(this->m_val))>>;
         static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
-        static_assert(std::is_same_v<U::error_type, E>, "The error type must be the same after calling the F");
+        static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
 
         if (has_value())
             return std::invoke(std::forward<F>(f), std::move(this->m_val));
@@ -1790,7 +1790,7 @@ public:
     {
         using U = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(this->m_val))>>;
         static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
-        static_assert(std::is_same_v<U::error_type, E>, "The error type must be the same after calling the F");
+        static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
 
         if (has_value())
             return std::invoke(std::forward<F>(f), std::move(this->m_val));
@@ -2469,7 +2469,7 @@ public:
     {
         using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
         static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
-        static_assert(std::is_same_v<U::error_type, E>, "The error type must be the same after calling the F");
+        static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
 
         if (has_value())
             return std::invoke(std::forward<F>(f));
@@ -2481,7 +2481,7 @@ public:
     {
         using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
         static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
-        static_assert(std::is_same_v<U::error_type, E>, "The error type must be the same after calling the F");
+        static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
 
         if (has_value())
             return std::invoke(std::forward<F>(f));
