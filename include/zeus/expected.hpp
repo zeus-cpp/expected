@@ -8,7 +8,7 @@
 
 #define ZEUS_EXPECTED_VERSION_MAJOR 1
 #define ZEUS_EXPECTED_VERSION_MINOR 0
-#define ZEUS_EXPECTED_VERSION_PATCH 1
+#define ZEUS_EXPECTED_VERSION_PATCH 2
 
 #if __cplusplus < 201'703L
 static_assert(false, "This expected variant requires C++17");
