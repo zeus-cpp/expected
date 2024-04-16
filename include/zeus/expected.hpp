@@ -1702,7 +1702,7 @@ public:
         noexcept(std::is_nothrow_copy_constructible_v<T> && std::is_nothrow_convertible_v<U, T>)
 #endif
     {
-        static_assert(std::is_copy_constructible_v<T>, "T must be copy-constructible");
+        static_assert(std::is_move_constructible_v<T>, "T must be move-constructible");
         static_assert(std::is_convertible_v<U, T>, "is_convertible_v<U, T> must be true");
         if (this->m_has_val)
         {
@@ -1737,7 +1737,7 @@ public:
         noexcept(std::is_nothrow_copy_constructible_v<E> && std::is_nothrow_convertible_v<G, E>)
 #endif
     {
-        static_assert(std::is_copy_constructible_v<E>, "E must be copy-constructible");
+        static_assert(std::is_move_constructible_v<E>, "E must be move-constructible");
         static_assert(std::is_convertible_v<G, E>, "is_convertible_v<G, E> must be true");
         if (this->m_has_val)
         {
@@ -2428,7 +2428,7 @@ public:
         noexcept(std::is_nothrow_copy_constructible_v<E> && std::is_nothrow_convertible_v<G, E>)
 #endif
     {
-        static_assert(std::is_copy_constructible_v<E>, "E must be copy-constructible");
+        static_assert(std::is_move_constructible_v<E>, "E must be move-constructible");
         static_assert(std::is_convertible_v<G, E>, "is_convertible_v<G, E> must be true");
         if (this->m_has_val)
         {
