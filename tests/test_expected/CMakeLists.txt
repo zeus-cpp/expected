@@ -3,6 +3,7 @@ project(test_expected)
 set(SOURCES
     base_tests.cpp
     monadic_tests.cpp
+    noexcept_tests.cpp
     test_expected_main.cpp
 )
 
