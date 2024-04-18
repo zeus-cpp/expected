@@ -10,11 +10,17 @@
 #define ZEUS_EXPECTED_VERSION_MINOR 0
 #define ZEUS_EXPECTED_VERSION_PATCH 2
 
-#if __cplusplus < 201'703L
+#if defined(_MSVC_LANG)
+    #define ZEUS_EXPECTED_CPLUSPLUS _MSVC_LANG
+#else
+    #define ZEUS_EXPECTED_CPLUSPLUS __cplusplus
+#endif
+
+#if ZEUS_EXPECTED_CPLUSPLUS < 201'703L
 static_assert(false, "This expected variant requires C++17");
 #endif
 
-#if __cplusplus >= 202'002L
+#if ZEUS_EXPECTED_CPLUSPLUS >= 202'002L
     #define ZEUS_EXPECTED_CONSTEXPR_DTOR constexpr
 #else
     #define ZEUS_EXPECTED_CONSTEXPR_DTOR
@@ -53,7 +59,7 @@ namespace expected_detail
 template<class T, class... Args>
 constexpr T *construct_at(T *p, Args &&...args) noexcept(noexcept(::new (static_cast<void *>(p)) T(std::forward<Args>(args)...)))
 {
-#if __cplusplus >= 202'002L
+#if ZEUS_EXPECTED_CPLUSPLUS >= 202'002L
     return std::construct_at(p, std::forward<Args>(args)...);
 #else
     return ::new (static_cast<void *>(p)) T(std::forward<Args>(args)...);
