@@ -2441,7 +2441,7 @@ public:
     constexpr auto and_then(F &&f) &
     {
         using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
-        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(expected_detail::is_specialization_v<U, zeus::expected>, "U (return type of F) must be specialization of expected");
         static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
 
         if (has_value())
@@ -2453,7 +2453,7 @@ public:
     constexpr auto and_then(F &&f) const &
     {
         using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
-        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(expected_detail::is_specialization_v<U, zeus::expected>, "U (return type of F) must be specialization of expected");
         static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
 
         if (has_value())
@@ -2465,7 +2465,7 @@ public:
     constexpr auto and_then(F &&f) &&
     {
         using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
-        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(expected_detail::is_specialization_v<U, zeus::expected>, "U (return type of F) must be specialization of expected");
         static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
 
         if (has_value())
@@ -2477,7 +2477,7 @@ public:
     constexpr auto and_then(F &&f) const &&
     {
         using U = expected_detail::remove_cvref_t<std::invoke_result_t<F>>;
-        static_assert(expected_detail::is_specialization_v<U, expected>, "U (return type of F) must be specialization of expected");
+        static_assert(expected_detail::is_specialization_v<U, zeus::expected>, "U (return type of F) must be specialization of expected");
         static_assert(std::is_same_v<typename U::error_type, E>, "The error type must be the same after calling the F");
 
         if (has_value())
@@ -2490,7 +2490,7 @@ public:
     constexpr auto or_else(F &&f) &
     {
         using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
-        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(expected_detail::is_specialization_v<G, zeus::expected>, "G (return type of F) must be specialization of expected");
         static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
 
         if (has_value())
@@ -2502,7 +2502,7 @@ public:
     constexpr auto or_else(F &&f) const &
     {
         using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(error())>>;
-        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(expected_detail::is_specialization_v<G, zeus::expected>, "G (return type of F) must be specialization of expected");
         static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
 
         if (has_value())
@@ -2514,7 +2514,7 @@ public:
     constexpr auto or_else(F &&f) &&
     {
         using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
-        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(expected_detail::is_specialization_v<G, zeus::expected>, "G (return type of F) must be specialization of expected");
         static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
 
         if (has_value())
@@ -2526,7 +2526,7 @@ public:
     constexpr auto or_else(F &&f) const &&
     {
         using G = expected_detail::remove_cvref_t<std::invoke_result_t<F, decltype(std::move(error()))>>;
-        static_assert(expected_detail::is_specialization_v<G, expected>, "G (return type of F) must be specialization of expected");
+        static_assert(expected_detail::is_specialization_v<G, zeus::expected>, "G (return type of F) must be specialization of expected");
         static_assert(std::is_same_v<typename G::value_type, T>, "The value type must be the same after calling the F");
 
         if (has_value())
