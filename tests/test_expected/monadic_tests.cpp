@@ -77,7 +77,7 @@ TEST_CASE("void-T or_else()", "[monadic, void-T]")
 {
     using Expected = expected<void, int>;
 
-    { // non-void
+    { // void
         using Expected2 = expected<void, double>;
 
         Expected e {};
