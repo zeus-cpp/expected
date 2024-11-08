@@ -1207,7 +1207,7 @@ public:
         class U,                                                                                                  //
         class G,                                                                                                  //
         std::enable_if_t<std::is_convertible_v<const U &, T> && std::is_convertible_v<const G &, E>> * = nullptr, //
-        expected_detail::enable_from_other_expected_t<T, E, U, G, const U &, const G &>              * = nullptr>
+        expected_detail::enable_from_other_expected_t<T, E, U, G, const U &, const G &> *              = nullptr>
     constexpr expected(const expected<U, G> &rhs) //
         noexcept(std::is_nothrow_constructible_v<T, const U &> && std::is_nothrow_constructible_v<E, const G &>)
         : ctor_base(expected_detail::default_constructor_tag {})
@@ -1227,7 +1227,7 @@ public:
         class U,                                                                                                     //
         class G,                                                                                                     //
         std::enable_if_t<!(std::is_convertible_v<const U &, T> && std::is_convertible_v<const G &, E>)> * = nullptr, //
-        expected_detail::enable_from_other_expected_t<T, E, U, G, const U &, const G &>                 * = nullptr>
+        expected_detail::enable_from_other_expected_t<T, E, U, G, const U &, const G &> *                 = nullptr>
     constexpr explicit expected(const expected<U, G> &rhs) //
         noexcept(std::is_nothrow_constructible_v<T, const U &> && std::is_nothrow_constructible_v<E, const G &>)
         : ctor_base(expected_detail::default_constructor_tag {})
@@ -1247,7 +1247,7 @@ public:
         class U,                                                                                  //
         class G,                                                                                  //
         std::enable_if_t<std::is_convertible_v<U, T> && std::is_convertible_v<G, E>> * = nullptr, //
-        expected_detail::enable_from_other_expected_t<T, E, U, G, U, G>              * = nullptr>
+        expected_detail::enable_from_other_expected_t<T, E, U, G, U, G> *              = nullptr>
     constexpr expected(expected<U, G> &&rhs) //
         noexcept(std::is_nothrow_constructible_v<T, U> && std::is_nothrow_constructible_v<E, G>)
         : ctor_base(expected_detail::default_constructor_tag {})
@@ -1267,7 +1267,7 @@ public:
         class U,                                                                                     //
         class G,                                                                                     //
         std::enable_if_t<!(std::is_convertible_v<U, T> && std::is_convertible_v<G, E>)> * = nullptr, //
-        expected_detail::enable_from_other_expected_t<T, E, U, G, U, G>                 * = nullptr>
+        expected_detail::enable_from_other_expected_t<T, E, U, G, U, G> *                 = nullptr>
     constexpr explicit expected(expected<U, G> &&rhs) //
         noexcept(std::is_nothrow_constructible_v<T, U> && std::is_nothrow_constructible_v<E, G>)
         : ctor_base(expected_detail::default_constructor_tag {})
@@ -1296,7 +1296,7 @@ public:
     template<
         class U                                          = T,
         std::enable_if_t<!std::is_convertible_v<U, T>> * = nullptr,
-        expected_detail::enable_forward_t<T, E, U>     * = nullptr>
+        expected_detail::enable_forward_t<T, E, U> *     = nullptr>
     constexpr explicit expected(U &&v) noexcept(std::is_nothrow_constructible_v<T, U>)
         : expected(std::in_place, std::forward<U>(v))
     {
@@ -1307,7 +1307,7 @@ public:
     // explicit const unexpected<G> &
     template<
         class G,                                                             //
-        std::enable_if_t<!std::is_convertible_v<const G &, E>>  * = nullptr, //
+        std::enable_if_t<!std::is_convertible_v<const G &, E>> *  = nullptr, //
         std::enable_if_t<std::is_constructible_v<E, const G &>> * = nullptr>
     explicit constexpr expected(const unexpected<G> &e) noexcept(std::is_nothrow_constructible_v<E, const G &>)
         : impl_base(unexpect, e.error())
@@ -1318,7 +1318,7 @@ public:
     // implicit const unexpected<G> &
     template<
         class G,                                                             //
-        std::enable_if_t<std::is_convertible_v<const G &, E>>   * = nullptr, //
+        std::enable_if_t<std::is_convertible_v<const G &, E>> *   = nullptr, //
         std::enable_if_t<std::is_constructible_v<E, const G &>> * = nullptr>
     constexpr expected(unexpected<G> const &e) noexcept(std::is_nothrow_constructible_v<E, const G &>)
         : impl_base(unexpect, e.error())
@@ -1329,7 +1329,7 @@ public:
     // explicit unexpected<G> &&
     template<
         class G,                                                     //
-        std::enable_if_t<!std::is_convertible_v<G, E>>  * = nullptr, //
+        std::enable_if_t<!std::is_convertible_v<G, E>> *  = nullptr, //
         std::enable_if_t<std::is_constructible_v<E, G>> * = nullptr>
     explicit constexpr expected(unexpected<G> &&e) noexcept(std::is_nothrow_constructible_v<E, G>)
         : impl_base(unexpect, std::move(e.error()))
@@ -1340,7 +1340,7 @@ public:
     // implicit unexpected<G> &&
     template<
         class G,                                                     //
-        std::enable_if_t<std::is_convertible_v<G, E>>   * = nullptr, //
+        std::enable_if_t<std::is_convertible_v<G, E>> *   = nullptr, //
         std::enable_if_t<std::is_constructible_v<E, G>> * = nullptr>
     constexpr expected(unexpected<G> &&e) noexcept(std::is_nothrow_constructible_v<E, G>)
         : impl_base(unexpect, std::move(e.error()))
@@ -1453,7 +1453,7 @@ public:
             (std::is_nothrow_constructible_v<E, GF> ||  //
              std::is_nothrow_move_constructible_v<T> || //
              std::is_nothrow_move_constructible_v<E>)   //
-            >  * = nullptr>
+            > *  = nullptr>
     constexpr expected &operator=(const unexpected<G> &rhs) //
         noexcept(std::is_nothrow_constructible_v<E, GF> && std::is_nothrow_assignable_v<E &, GF>)
     {
@@ -1479,7 +1479,7 @@ public:
             (std::is_nothrow_constructible_v<E, GF> ||  //
              std::is_nothrow_move_constructible_v<T> || //
              std::is_nothrow_move_constructible_v<E>)   //
-            >  * = nullptr>
+            > *  = nullptr>
     constexpr expected &operator=(unexpected<G> &&rhs) //
         noexcept(std::is_nothrow_constructible_v<E, GF> && std::is_nothrow_assignable_v<E &, GF>)
     {
@@ -2150,7 +2150,7 @@ public:
     template<
         class U,                                                                            //
         class G,                                                                            //
-        std::enable_if_t<std::is_convertible_v<const G &, E>>                  * = nullptr, //
+        std::enable_if_t<std::is_convertible_v<const G &, E>> *                  = nullptr, //
         expected_detail::enable_from_other_void_expected_t<E, U, G, const G &> * = nullptr>
     constexpr expected(const expected<U, G> &rhs) //
         noexcept(std::is_nothrow_constructible_v<E, const G &>)
@@ -2169,7 +2169,7 @@ public:
     template<
         class U,                                                                            //
         class G,                                                                            //
-        std::enable_if_t<!std::is_convertible_v<const G &, E>>                 * = nullptr, //
+        std::enable_if_t<!std::is_convertible_v<const G &, E>> *                 = nullptr, //
         expected_detail::enable_from_other_void_expected_t<E, U, G, const G &> * = nullptr>
     constexpr explicit expected(const expected<U, G> &rhs) //
         noexcept(std::is_nothrow_constructible_v<E, const G &>)
@@ -2188,7 +2188,7 @@ public:
     template<
         class U,                                                                    //
         class G,                                                                    //
-        std::enable_if_t<std::is_convertible_v<G, E>>                  * = nullptr, //
+        std::enable_if_t<std::is_convertible_v<G, E>> *                  = nullptr, //
         expected_detail::enable_from_other_void_expected_t<E, U, G, G> * = nullptr>
     constexpr expected(expected<U, G> &&rhs) //
         noexcept(std::is_nothrow_constructible_v<E, G>)
@@ -2207,7 +2207,7 @@ public:
     template<
         class U,                                                                    //
         class G,                                                                    //
-        std::enable_if_t<!std::is_convertible_v<G, E>>                 * = nullptr, //
+        std::enable_if_t<!std::is_convertible_v<G, E>> *                 = nullptr, //
         expected_detail::enable_from_other_void_expected_t<E, U, G, G> * = nullptr>
     constexpr explicit expected(expected<U, G> &&rhs) //
         noexcept(std::is_nothrow_constructible_v<E, G>)
@@ -2228,7 +2228,7 @@ public:
     // explicit const unexpected<G> &
     template<
         class G,                                                             //
-        std::enable_if_t<!std::is_convertible_v<const G &, E>>  * = nullptr, //
+        std::enable_if_t<!std::is_convertible_v<const G &, E>> *  = nullptr, //
         std::enable_if_t<std::is_constructible_v<E, const G &>> * = nullptr>
     explicit constexpr expected(const unexpected<G> &e) noexcept(std::is_nothrow_constructible_v<E, const G &>)
         : impl_base(unexpect, e.error())
@@ -2239,7 +2239,7 @@ public:
     // implicit const unexpected<G> &
     template<
         class G,                                                             //
-        std::enable_if_t<std::is_convertible_v<const G &, E>>   * = nullptr, //
+        std::enable_if_t<std::is_convertible_v<const G &, E>> *   = nullptr, //
         std::enable_if_t<std::is_constructible_v<E, const G &>> * = nullptr>
     constexpr expected(unexpected<G> const &e) noexcept(std::is_nothrow_constructible_v<E, const G &>)
         : impl_base(unexpect, e.error())
@@ -2250,7 +2250,7 @@ public:
     // explicit unexpected<G> &&
     template<
         class G,                                                     //
-        std::enable_if_t<!std::is_convertible_v<G, E>>  * = nullptr, //
+        std::enable_if_t<!std::is_convertible_v<G, E>> *  = nullptr, //
         std::enable_if_t<std::is_constructible_v<E, G>> * = nullptr>
     explicit constexpr expected(unexpected<G> &&e) noexcept(std::is_nothrow_constructible_v<E, G>)
         : impl_base(unexpect, std::move(e.error()))
@@ -2261,7 +2261,7 @@ public:
     // implicit unexpected<G> &&
     template<
         class G,                                                     //
-        std::enable_if_t<std::is_convertible_v<G, E>>   * = nullptr, //
+        std::enable_if_t<std::is_convertible_v<G, E>> *   = nullptr, //
         std::enable_if_t<std::is_constructible_v<E, G>> * = nullptr>
     constexpr expected(unexpected<G> &&e) noexcept(std::is_nothrow_constructible_v<E, G>)
         : impl_base(unexpect, std::move(e.error()))
@@ -2314,7 +2314,7 @@ public:
         std::enable_if_t<                     //
             std::is_constructible_v<E, GF> && //
             std::is_assignable_v<E &, GF>     //
-            >  * = nullptr>
+            > *  = nullptr>
     constexpr expected &operator=(const unexpected<G> &rhs) //
         noexcept(std::is_nothrow_constructible_v<E, GF> && std::is_nothrow_assignable_v<E &, GF>)
     {
@@ -2337,7 +2337,7 @@ public:
         std::enable_if_t<                     //
             std::is_constructible_v<E, GF> && //
             std::is_assignable_v<E &, GF>     //
-            >  * = nullptr>
+            > *  = nullptr>
     constexpr expected &operator=(unexpected<G> &&rhs) //
         noexcept(std::is_nothrow_constructible_v<E, GF> && std::is_nothrow_assignable_v<E &, GF>)
     {
