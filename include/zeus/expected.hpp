@@ -2019,12 +2019,14 @@ public:
             return x.error() == y.error();
         }
     }
+#if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class T2, class E2>
     [[nodiscard]] friend constexpr std::enable_if_t<!std::is_void_v<T2>, bool> operator!=(const expected &x, const expected<T2, E2> &y) //
         noexcept(noexcept(x == y))
     {
         return !(x == y);
     }
+#endif
 
     template<class T2>
     [[nodiscard]] friend constexpr bool operator==(const expected &x, const T2 &v) //
@@ -2039,12 +2041,30 @@ public:
             return false;
         }
     }
+#if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class T2>
     [[nodiscard]] friend constexpr bool operator!=(const expected &x, const T2 &v) //
         noexcept(noexcept(x == v))
     {
         return !(x == v);
     }
+    template<class T2>
+    [[nodiscard]] friend constexpr std::enable_if_t<!expected_detail::is_specialization_v<T2, zeus::expected>, bool> operator==(
+        const T2 &v, const expected &x
+    ) //
+        noexcept(noexcept(x == v))
+    {
+        return x == v;
+    }
+    template<class T2>
+    [[nodiscard]] friend constexpr std::enable_if_t<!expected_detail::is_specialization_v<T2, zeus::expected>, bool> operator!=(
+        const T2 &v, const expected &x
+    ) //
+        noexcept(noexcept(x == v))
+    {
+        return x != v;
+    }
+#endif
 
     template<class E2>
     [[nodiscard]] friend constexpr bool operator==(const expected &x, const unexpected<E2> &e) //
@@ -2059,12 +2079,26 @@ public:
             return static_cast<bool>(x.error() == e.error());
         }
     }
+#if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class E2>
     [[nodiscard]] friend constexpr bool operator!=(const expected &x, const unexpected<E2> &e) //
         noexcept(noexcept(x == e))
     {
         return !(x == e);
     }
+    template<class E2>
+    [[nodiscard]] friend constexpr bool operator==(const unexpected<E2> &e, const expected &x) //
+        noexcept(noexcept(x == e))
+    {
+        return x == e;
+    }
+    template<class E2>
+    [[nodiscard]] friend constexpr bool operator!=(const unexpected<E2> &e, const expected &x) //
+        noexcept(noexcept(x == e))
+    {
+        return x != e;
+    }
+#endif
 };
 
 // standalone swap for non-void value type
@@ -2702,12 +2736,14 @@ public:
             return x.has_value() || static_cast<bool>(x.error() == y.error());
         }
     }
+#if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class T2, class E2>
     [[nodiscard]] friend constexpr std::enable_if_t<std::is_void_v<T2>, bool> operator!=(const expected &x, const expected<T2, E2> &y) //
         noexcept(noexcept(x == y))
     {
         return !(x == y);
     }
+#endif
 
     template<class E2>
     [[nodiscard]] friend constexpr bool operator==(const expected &x, const unexpected<E2> &e) //
@@ -2722,12 +2758,26 @@ public:
             return static_cast<bool>(x.error() == e.error());
         }
     }
+#if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class E2>
     [[nodiscard]] friend constexpr bool operator!=(const expected &x, const unexpected<E2> &e) //
         noexcept(noexcept(x == e))
     {
         return !(x == e);
     }
+    template<class E2>
+    [[nodiscard]] friend constexpr bool operator==(const unexpected<E2> &e, const expected &x) //
+        noexcept(noexcept(x == e))
+    {
+        return x == e;
+    }
+    template<class E2>
+    [[nodiscard]] friend constexpr bool operator!=(const unexpected<E2> &e, const expected &x) //
+        noexcept(noexcept(x == e))
+    {
+        return x != e;
+    }
+#endif
 };
 
 // standalone swap for void value type
