@@ -1,18 +1,36 @@
 ---
 Language: Cpp
+BasedOnStyle: Microsoft
 
 AccessModifierOffset: -4
 
 AlignAfterOpenBracket:        BlockIndent
 AlignArrayOfStructures:       Left
-AlignConsecutiveAssignments:  AcrossComments
-AlignConsecutiveBitFields:    AcrossComments
-AlignConsecutiveDeclarations: AcrossComments
-AlignConsecutiveMacros:       AcrossComments
+AlignConsecutiveAssignments:
+  Enabled:          true
+  AcrossEmptyLines: false
+  AcrossComments:   true
+  AlignCompound:    false # only for AlignConsecutiveAssignments
+  PadOperators:     true # only for AlignConsecutiveAssignments
+AlignConsecutiveBitFields:
+  Enabled:          true
+  AcrossEmptyLines: false
+  AcrossComments:   true
+AlignConsecutiveDeclarations:
+  Enabled:                   true
+  AcrossEmptyLines:          false
+  AcrossComments:            true
+  #AlignFunctionDeclarations: false # only for AlignConsecutiveDeclarations # clang-format 20
+  AlignFunctionPointers:     false # only for AlignConsecutiveDeclarations
+AlignConsecutiveMacros:
+  Enabled:          true
+  AcrossEmptyLines: false
+  AcrossComments:   true
 AlignConsecutiveShortCaseStatements:
   Enabled: true
   AcrossEmptyLines: false
   AcrossComments: true
+  AlignCaseArrows: false
   AlignCaseColons: false
 AlignEscapedNewlines:         Left
 AlignOperands:                AlignAfterOperator
@@ -24,13 +42,17 @@ AllowAllArgumentsOnNextLine:                true
 AllowAllConstructorInitializersOnNextLine:  true
 AllowAllParametersOfDeclarationOnNextLine:  true
 
-AllowShortBlocksOnASingleLine:        Empty
-AllowShortCaseLabelsOnASingleLine:    false
-AllowShortEnumsOnASingleLine:         true
-AllowShortFunctionsOnASingleLine:     InlineOnly
-AllowShortIfStatementsOnASingleLine:  Never
-AllowShortLambdasOnASingleLine:       Inline
-AllowShortLoopsOnASingleLine:         false
+AllowBreakBeforeNoexceptSpecifier: Never
+
+AllowShortBlocksOnASingleLine:              Empty
+AllowShortCaseExpressionOnASingleLine:      true
+AllowShortCaseLabelsOnASingleLine:          false
+AllowShortCompoundRequirementOnASingleLine: true
+AllowShortEnumsOnASingleLine:               true
+AllowShortFunctionsOnASingleLine:           InlineOnly
+AllowShortIfStatementsOnASingleLine:        Never
+AllowShortLambdasOnASingleLine:             Inline
+AllowShortLoopsOnASingleLine:               false
 
 AlwaysBreakAfterReturnType:         None
 AlwaysBreakBeforeMultilineStrings:  true
@@ -65,16 +87,20 @@ BraceWrapping:
   SplitEmptyFunction:   true
   SplitEmptyRecord:     true
   SplitEmptyNamespace:  true
-BracedInitializerIndentWidth: 4 # clang-format 17
+BracedInitializerIndentWidth: 4
+BreakAdjacentStringLiterals: true
 BreakAfterAttributes: Leave
+BreakAfterReturnType: ExceptShortType
 BreakBeforeBinaryOperators:     None # TBD
 BreakBeforeBraces:              Custom
 BreakBeforeConceptDeclarations: Always
 BreakBeforeInlineASMColon:      Always
 BreakBeforeTernaryOperators:    false
 BreakConstructorInitializers: BeforeComma
+BreakFunctionDefinitionParameters: false
 BreakInheritanceList: BeforeComma
 BreakStringLiterals: true
+BreakTemplateDeclarations: Yes
 
 ColumnLimit: 140
 CommentPragmas: "^ IWYU pragma:" # TBD`
@@ -129,12 +155,16 @@ IntegerLiteralSeparator:
 
 LineEnding: DeriveLF
 
-KeepEmptyLinesAtEOF: true
-KeepEmptyLinesAtTheStartOfBlocks: false
+KeepEmptyLines:
+  AtEndOfFile: true
+  AtStartOfBlock: false
+  AtStartOfFile: false
+
 LambdaBodyIndentation: Signature
-Macros: [] # TBD
 MacroBlockBegin:  "" # TBD
 MacroBlockEnd:    "" # TBD
+Macros: [] # TBD
+#MainIncludeChar: Quota # clang-format 20
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 NamespaceMacros: [] # TBD A vector of macros which are used to open namespace blocks.
@@ -142,17 +172,18 @@ NamespaceMacros: [] # TBD A vector of macros which are used to open namespace bl
 PPIndentWidth: -1 # default to IndentWidth
 PackConstructorInitializers: Never
 
-# Penalty is hard to understand, leave it to default
+# Penalty is hard to understand, leave it to default(style=Microsoft)
 #PenaltyBreakAssignment: 2
 #PenaltyBreakBeforeFirstCallParameter: 19
 #PenaltyBreakComment: 300
 #PenaltyBreakFirstLessLess: 120
 #PenaltyBreakOpenParenthesis: 0
+#PenaltyBreakScopeResolution: 500
 #PenaltyBreakString: 1000
 #PenaltyBreakTemplateDeclaration: 10
 #PenaltyExcessCharacter: 1000000
 #PenaltyIndentedWhitespace: 0
-#PenaltyReturnTypeOnItsOwnLine: 6000
+#PenaltyReturnTypeOnItsOwnLine: 1000
 
 PointerAlignment: Left
 
@@ -170,6 +201,8 @@ RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 
 ShortNamespaceLines: 20
+
+SkipMacroDefinitionBody: false
 
 SortIncludes:           Never
 SortUsingDeclarations:  false
