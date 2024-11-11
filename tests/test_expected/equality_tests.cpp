@@ -35,7 +35,6 @@ struct Type1
     ~Type1()                       = default;
 
     bool operator==(Type1 const& rhs) const { return value == rhs.value; }
-    bool operator!=(Type1 const& rhs) const { return value != rhs.value; }
 };
 
 struct Type2
@@ -57,7 +56,6 @@ struct Type2
     ~Type2()                       = default;
 
     bool operator==(Type2 const& rhs) const { return value == rhs.value; }
-    bool operator!=(Type2 const& rhs) const { return value != rhs.value; }
 };
 
 inline bool operator==(Type1 const& lhs, Type2 const& rhs)
@@ -65,19 +63,9 @@ inline bool operator==(Type1 const& lhs, Type2 const& rhs)
     return lhs.value == rhs.value;
 }
 
-inline bool operator!=(Type1 const& lhs, Type2 const& rhs)
-{
-    return !(lhs == rhs);
-}
-
 inline bool operator==(Type2 const& lhs, Type1 const& rhs)
 {
     return rhs == lhs;
-}
-
-inline bool operator!=(Type2 const& lhs, Type1 const& rhs)
-{
-    return rhs != lhs;
 }
 
 } // namespace
