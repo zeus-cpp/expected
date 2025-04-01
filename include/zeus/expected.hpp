@@ -942,7 +942,10 @@ struct copy_assign_base<T, E, true, false> : move_ctor_base<T, E>
     copy_assign_base(copy_assign_base &&rhs)      = default;
 
     constexpr copy_assign_base &operator=(const copy_assign_base &rhs) //
-        noexcept(std::is_nothrow_copy_constructible_v<T> && std::is_nothrow_copy_assignable_v<T> && std::is_nothrow_copy_constructible_v<E> && std::is_nothrow_copy_assignable_v<E>)
+        noexcept(
+            std::is_nothrow_copy_constructible_v<T> && std::is_nothrow_copy_assignable_v<T> && std::is_nothrow_copy_constructible_v<E> &&
+            std::is_nothrow_copy_assignable_v<E>
+        )
     {
         if (this->m_has_val && rhs.m_has_val)
         {
@@ -1063,7 +1066,10 @@ struct move_assign_base<T, E, true, false> : copy_assign_base<T, E>
     move_assign_base &operator=(const move_assign_base &rhs) = default;
 
     constexpr move_assign_base &operator=(move_assign_base &&rhs) //
-        noexcept(std::is_nothrow_move_constructible_v<T> && std::is_nothrow_move_assignable_v<T> && std::is_nothrow_move_constructible_v<E> && std::is_nothrow_move_assignable_v<E>)
+        noexcept(
+            std::is_nothrow_move_constructible_v<T> && std::is_nothrow_move_assignable_v<T> && std::is_nothrow_move_constructible_v<E> &&
+            std::is_nothrow_move_assignable_v<E>
+        )
     {
         if (this->m_has_val && rhs.m_has_val)
         {
@@ -1550,14 +1556,15 @@ public:
     }
 
     template<class OT = T, class OE = E>
-    constexpr
-    std::enable_if_t<
+    constexpr std::enable_if_t<
         std::is_swappable_v<OT> && std::is_swappable_v<OE> &&                   //
         std::is_move_constructible_v<OT> && std::is_move_constructible_v<OE> && //
         (std::is_nothrow_move_constructible_v<OT> || std::is_nothrow_move_constructible_v<OE>)>
     swap(expected &rhs) //
-        noexcept(std::is_nothrow_move_constructible_v<T> && std::is_nothrow_swappable_v<T> && //
-                 std::is_nothrow_move_constructible_v<E> && std::is_nothrow_swappable_v<E>)
+        noexcept(
+            std::is_nothrow_move_constructible_v<T> && std::is_nothrow_swappable_v<T> && //
+            std::is_nothrow_move_constructible_v<E> && std::is_nothrow_swappable_v<E>
+        )
     {
         using std::swap;
         if (this->m_has_val && rhs.m_has_val)
