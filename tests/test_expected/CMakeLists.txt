@@ -5,6 +5,7 @@ set(SOURCES
     monadic_tests.cpp
     noexcept_tests.cpp
     equality_tests.cpp
+    lwg_3886_tests.cpp
     test_expected_main.cpp
 )
 
