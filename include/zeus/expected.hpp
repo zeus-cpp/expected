@@ -1194,6 +1194,9 @@ public:
     typedef E             error_type;
     typedef unexpected<E> unexpected_type;
 
+    template<class U>
+    using rebind = expected<U, error_type>;
+
     // default constructors
 
     constexpr expected()                    = default;
@@ -2142,6 +2145,9 @@ public:
     typedef T             value_type;
     typedef E             error_type;
     typedef unexpected<E> unexpected_type;
+
+    template<class U>
+    using rebind = expected<U, error_type>;
 
     constexpr expected()                    = default;
     constexpr expected(const expected &rhs) = default;
