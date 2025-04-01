@@ -1289,7 +1289,10 @@ public:
     //     expected(U &&)
 
     // implicit
-    template<class U = T, std::enable_if_t<std::is_convertible_v<U, T>> * = nullptr, expected_detail::enable_forward_t<T, E, U> * = nullptr>
+    template<
+        class U                                         = std::remove_cv_t<T>,
+        std::enable_if_t<std::is_convertible_v<U, T>> * = nullptr,
+        expected_detail::enable_forward_t<T, E, U> *    = nullptr>
     constexpr expected(U &&v) noexcept(std::is_nothrow_constructible_v<T, U>)
         : expected(std::in_place, std::forward<U>(v))
     {
@@ -1297,7 +1300,7 @@ public:
 
     // explicit
     template<
-        class U                                          = T,
+        class U                                          = std::remove_cv_t<T>,
         std::enable_if_t<!std::is_convertible_v<U, T>> * = nullptr,
         expected_detail::enable_forward_t<T, E, U> *     = nullptr>
     constexpr explicit expected(U &&v) noexcept(std::is_nothrow_constructible_v<T, U>)
@@ -1421,7 +1424,7 @@ public:
     // assignments
 
     template<
-        class U = T,                                                                                 //
+        class U = std::remove_cv_t<T>,
         std::enable_if_t<                                                                            //
             !std::is_same_v<expected, expected_detail::remove_cvref_t<U>> &&                         //
             !expected_detail::is_specialization_v<expected_detail::remove_cvref_t<U>, unexpected> && //
@@ -1691,7 +1694,7 @@ public:
         return std::move(err());
     }
 
-    template<class U>
+    template<class U = std::remove_cv_t<T>>
     constexpr T value_or(U &&v) const & //
         noexcept(std::is_nothrow_copy_constructible_v<T> && expected_detail::is_nothrow_convertible_v<U, T>)
     {
@@ -1706,7 +1709,7 @@ public:
             return static_cast<T>(std::forward<U>(v));
         }
     }
-    template<class U>
+    template<class U = std::remove_cv_t<T>>
     constexpr T value_or(U &&v) && //
         noexcept(std::is_nothrow_move_constructible_v<T> && expected_detail::is_nothrow_convertible_v<U, T>)
     {
