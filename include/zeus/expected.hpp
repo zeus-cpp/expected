@@ -942,7 +942,10 @@ struct copy_assign_base<T, E, true, false> : move_ctor_base<T, E>
     copy_assign_base(copy_assign_base &&rhs)      = default;
 
     constexpr copy_assign_base &operator=(const copy_assign_base &rhs) //
-        noexcept(std::is_nothrow_copy_constructible_v<T> && std::is_nothrow_copy_assignable_v<T> && std::is_nothrow_copy_constructible_v<E> && std::is_nothrow_copy_assignable_v<E>)
+        noexcept(
+            std::is_nothrow_copy_constructible_v<T> && std::is_nothrow_copy_assignable_v<T> && std::is_nothrow_copy_constructible_v<E> &&
+            std::is_nothrow_copy_assignable_v<E>
+        )
     {
         if (this->m_has_val && rhs.m_has_val)
         {
@@ -1063,7 +1066,10 @@ struct move_assign_base<T, E, true, false> : copy_assign_base<T, E>
     move_assign_base &operator=(const move_assign_base &rhs) = default;
 
     constexpr move_assign_base &operator=(move_assign_base &&rhs) //
-        noexcept(std::is_nothrow_move_constructible_v<T> && std::is_nothrow_move_assignable_v<T> && std::is_nothrow_move_constructible_v<E> && std::is_nothrow_move_assignable_v<E>)
+        noexcept(
+            std::is_nothrow_move_constructible_v<T> && std::is_nothrow_move_assignable_v<T> && std::is_nothrow_move_constructible_v<E> &&
+            std::is_nothrow_move_assignable_v<E>
+        )
     {
         if (this->m_has_val && rhs.m_has_val)
         {
@@ -1194,6 +1200,9 @@ public:
     typedef E             error_type;
     typedef unexpected<E> unexpected_type;
 
+    template<class U>
+    using rebind = expected<U, error_type>;
+
     // default constructors
 
     constexpr expected()                    = default;
@@ -1286,7 +1295,10 @@ public:
     //     expected(U &&)
 
     // implicit
-    template<class U = T, std::enable_if_t<std::is_convertible_v<U, T>> * = nullptr, expected_detail::enable_forward_t<T, E, U> * = nullptr>
+    template<
+        class U                                         = std::remove_cv_t<T>,
+        std::enable_if_t<std::is_convertible_v<U, T>> * = nullptr,
+        expected_detail::enable_forward_t<T, E, U> *    = nullptr>
     constexpr expected(U &&v) noexcept(std::is_nothrow_constructible_v<T, U>)
         : expected(std::in_place, std::forward<U>(v))
     {
@@ -1294,7 +1306,7 @@ public:
 
     // explicit
     template<
-        class U                                          = T,
+        class U                                          = std::remove_cv_t<T>,
         std::enable_if_t<!std::is_convertible_v<U, T>> * = nullptr,
         expected_detail::enable_forward_t<T, E, U> *     = nullptr>
     constexpr explicit expected(U &&v) noexcept(std::is_nothrow_constructible_v<T, U>)
@@ -1418,7 +1430,7 @@ public:
     // assignments
 
     template<
-        class U = T,                                                                                 //
+        class U = std::remove_cv_t<T>,
         std::enable_if_t<                                                                            //
             !std::is_same_v<expected, expected_detail::remove_cvref_t<U>> &&                         //
             !expected_detail::is_specialization_v<expected_detail::remove_cvref_t<U>, unexpected> && //
@@ -1544,14 +1556,15 @@ public:
     }
 
     template<class OT = T, class OE = E>
-    constexpr
-    std::enable_if_t<
+    constexpr std::enable_if_t<
         std::is_swappable_v<OT> && std::is_swappable_v<OE> &&                   //
         std::is_move_constructible_v<OT> && std::is_move_constructible_v<OE> && //
         (std::is_nothrow_move_constructible_v<OT> || std::is_nothrow_move_constructible_v<OE>)>
     swap(expected &rhs) //
-        noexcept(std::is_nothrow_move_constructible_v<T> && std::is_nothrow_swappable_v<T> && //
-                 std::is_nothrow_move_constructible_v<E> && std::is_nothrow_swappable_v<E>)
+        noexcept(
+            std::is_nothrow_move_constructible_v<T> && std::is_nothrow_swappable_v<T> && //
+            std::is_nothrow_move_constructible_v<E> && std::is_nothrow_swappable_v<E>
+        )
     {
         using std::swap;
         if (this->m_has_val && rhs.m_has_val)
@@ -1688,7 +1701,7 @@ public:
         return std::move(err());
     }
 
-    template<class U>
+    template<class U = std::remove_cv_t<T>>
     constexpr T value_or(U &&v) const & //
         noexcept(std::is_nothrow_copy_constructible_v<T> && expected_detail::is_nothrow_convertible_v<U, T>)
     {
@@ -1703,7 +1716,7 @@ public:
             return static_cast<T>(std::forward<U>(v));
         }
     }
-    template<class U>
+    template<class U = std::remove_cv_t<T>>
     constexpr T value_or(U &&v) && //
         noexcept(std::is_nothrow_move_constructible_v<T> && expected_detail::is_nothrow_convertible_v<U, T>)
     {
@@ -2142,6 +2155,9 @@ public:
     typedef T             value_type;
     typedef E             error_type;
     typedef unexpected<E> unexpected_type;
+
+    template<class U>
+    using rebind = expected<U, error_type>;
 
     constexpr expected()                    = default;
     constexpr expected(const expected &rhs) = default;
