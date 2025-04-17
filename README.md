@@ -1,5 +1,7 @@
 # `zeus::expected`
 
+[![Tests Workflow](https://github.com/zeus-cpp/expected/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/zeus-cpp/expected/actions/workflows/tests.yml?query=branch%3Amain)
+
 Backporting `std::expected` to C++17.
 
 ## Features
