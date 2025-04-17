@@ -28,33 +28,27 @@ Enhancements:
 
 ## Compiler supports
 
-Any compiler that supports C++17 and later should work.
-Usage against higher language standard is also supported, in which you'll gain some benefits (e.g. better constexpr).
+Any compiler that supports C++17 should work.
 
-While heavily tested under MSVC and C++20, it's only tested slightly under C++17, since newly-made.
-May assume that it could just work if it compiled successfully.
+Higher language standards are also supported, which can provide benefits such as enhanced constexpr capabilities.
+
+List of known compiler supported:
+
++ MSVC v142 and later
++ GCC 8 and later
+
 Feedbacks are welcome.
-
-Table of known compiler status.
-
-| Planned             | Status          |
-| ------------------- | --------------- |
-| MSVC v142 and later | Fully tested    |
-| GCC 8 and later     | Slightly tested |
 
 ## Building and testing
 
 [Catch2](https://github.com/catchorg/Catch2) is required to build the tests.
-You may choose any preferred package manager to introduce the requirements. Here is the `conan` one.
+You may choose any preferred package manager to introduce the requirements. Here is a `conan` way.
 
-```
+```bash
 # install the requirements
 conan install . -s build_type=Debug -b missing
-# glance the cmake preset names
-cmake --list-presets
-cmake --build --list-presets
-ctest --list-presets
-# configure, build and test per preset names
+# configure, build and test with cmake
+# ...
 ```
 
 ## Acknowledgements
