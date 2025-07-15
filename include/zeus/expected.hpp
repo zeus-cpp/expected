@@ -197,14 +197,14 @@ public:
     friend constexpr void swap(unexpected &x, unexpected &y) noexcept(noexcept(x.swap(y))) { x.swap(y); }
 
     template<class E2>
-    friend constexpr bool operator==(const unexpected &lhs, const unexpected<E2> &rhs) noexcept(noexcept(lhs.m_val == rhs.error()))
+    friend constexpr bool operator==(const unexpected &lhs, const unexpected<E2> &rhs) noexcept(noexcept(lhs.error() == rhs.error()))
     {
-        return lhs.m_val == rhs.error();
+        return lhs.error() == rhs.error();
     }
     template<class E2>
-    friend constexpr bool operator!=(const unexpected &lhs, const unexpected<E2> &rhs) noexcept(noexcept(lhs.m_val != rhs.error()))
+    friend constexpr bool operator!=(const unexpected &lhs, const unexpected<E2> &rhs) noexcept(noexcept(lhs.error() != rhs.error()))
     {
-        return lhs.m_val != rhs.error();
+        return lhs.error() != rhs.error();
     }
 
 private:
