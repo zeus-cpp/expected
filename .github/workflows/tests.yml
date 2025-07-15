@@ -15,25 +15,25 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [windows-2019, windows-2022]
+        toolset: [142, 143]
         cppstd: ['17', '20', '23']
         build-type: [Debug, Release]
         exclude:
-          - os: windows-2019
+          - toolset: 142
             cppstd: '23'
         include:
-          - os: windows-2019
-            msvc-version: 142
-          - os: windows-2022
-            msvc-version: 143
+          - toolset: 142
+            conan-compiler-version: 192
+          - toolset: 143
+            conan-compiler-version: 194
           - build-type: Debug
             cmake-preset: conan-debug
           - build-type: Release
             cmake-preset: conan-release
 
-    name: MSVC ${{ matrix.msvc-version }} - C++${{ matrix.cppstd }} - ${{ matrix.build-type }}
+    name: MSVC ${{ matrix.toolset }} - C++${{ matrix.cppstd }} - ${{ matrix.build-type }}
 
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2022
 
     steps:
       - uses: actions/checkout@v4
@@ -52,6 +52,8 @@ jobs:
       - name: Install dependencies
         run: >
           conan install .
+          -c tools.microsoft.msbuild:vs_version=17
+          -s compiler.version=${{ matrix.conan-compiler-version }}
           -s compiler.cppstd=${{ matrix.cppstd }}
           -s build_type=${{ matrix.build-type }}
           -b missing
