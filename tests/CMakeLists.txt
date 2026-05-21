@@ -1,2 +1,3 @@
 add_subdirectory(test_expected)
+add_subdirectory(test_no_exceptions)
 add_subdirectory(third_party)
