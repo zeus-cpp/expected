@@ -28,9 +28,9 @@ static_assert(false, "This expected variant requires C++17");
 
 // Detect exception support
 #if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
-    #define ZEUS_EXPECTED_THROW(e) (throw (e))
+    #define ZEUS_EXPECTED_THROW(e) (throw(e))
 #else
-    #define ZEUS_EXPECTED_THROW(e) ((void)(e), std::terminate())
+    #define ZEUS_EXPECTED_THROW(e) ((void) (e), std::terminate())
 #endif
 
 #define ZEUS_EXPECTED_ABI_TAG expected_abi
