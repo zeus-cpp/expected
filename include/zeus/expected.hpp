@@ -1222,6 +1222,7 @@ public:
     template<
         class U,                                                                                                  //
         class G,                                                                                                  //
+        std::enable_if_t<!std::is_same_v<expected<U, G>, expected>> *                                  = nullptr, //
         std::enable_if_t<std::is_convertible_v<const U &, T> && std::is_convertible_v<const G &, E>> * = nullptr, //
         expected_detail::enable_from_other_expected_t<T, E, U, G, const U &, const G &> *              = nullptr>
     constexpr expected(const expected<U, G> &rhs) //
@@ -1242,6 +1243,7 @@ public:
     template<
         class U,                                                                                                     //
         class G,                                                                                                     //
+        std::enable_if_t<!std::is_same_v<expected<U, G>, expected>> *                                     = nullptr, //
         std::enable_if_t<!(std::is_convertible_v<const U &, T> && std::is_convertible_v<const G &, E>)> * = nullptr, //
         expected_detail::enable_from_other_expected_t<T, E, U, G, const U &, const G &> *                 = nullptr>
     constexpr explicit expected(const expected<U, G> &rhs) //
@@ -1262,6 +1264,7 @@ public:
     template<
         class U,                                                                                  //
         class G,                                                                                  //
+        std::enable_if_t<!std::is_same_v<expected<U, G>, expected>> *                  = nullptr, //
         std::enable_if_t<std::is_convertible_v<U, T> && std::is_convertible_v<G, E>> * = nullptr, //
         expected_detail::enable_from_other_expected_t<T, E, U, G, U, G> *              = nullptr>
     constexpr expected(expected<U, G> &&rhs) //
@@ -1282,6 +1285,7 @@ public:
     template<
         class U,                                                                                     //
         class G,                                                                                     //
+        std::enable_if_t<!std::is_same_v<expected<U, G>, expected>> *                     = nullptr, //
         std::enable_if_t<!(std::is_convertible_v<U, T> && std::is_convertible_v<G, E>)> * = nullptr, //
         expected_detail::enable_from_other_expected_t<T, E, U, G, U, G> *                 = nullptr>
     constexpr explicit expected(expected<U, G> &&rhs) //
@@ -2173,6 +2177,7 @@ public:
     template<
         class U,                                                                            //
         class G,                                                                            //
+        std::enable_if_t<!std::is_same_v<expected<U, G>, expected>> *            = nullptr, //
         std::enable_if_t<std::is_convertible_v<const G &, E>> *                  = nullptr, //
         expected_detail::enable_from_other_void_expected_t<E, U, G, const G &> * = nullptr>
     constexpr expected(const expected<U, G> &rhs) //
@@ -2192,6 +2197,7 @@ public:
     template<
         class U,                                                                            //
         class G,                                                                            //
+        std::enable_if_t<!std::is_same_v<expected<U, G>, expected>> *            = nullptr, //
         std::enable_if_t<!std::is_convertible_v<const G &, E>> *                 = nullptr, //
         expected_detail::enable_from_other_void_expected_t<E, U, G, const G &> * = nullptr>
     constexpr explicit expected(const expected<U, G> &rhs) //
@@ -2211,6 +2217,7 @@ public:
     template<
         class U,                                                                    //
         class G,                                                                    //
+        std::enable_if_t<!std::is_same_v<expected<U, G>, expected>> *    = nullptr, //
         std::enable_if_t<std::is_convertible_v<G, E>> *                  = nullptr, //
         expected_detail::enable_from_other_void_expected_t<E, U, G, G> * = nullptr>
     constexpr expected(expected<U, G> &&rhs) //
@@ -2230,6 +2237,7 @@ public:
     template<
         class U,                                                                    //
         class G,                                                                    //
+        std::enable_if_t<!std::is_same_v<expected<U, G>, expected>> *    = nullptr, //
         std::enable_if_t<!std::is_convertible_v<G, E>> *                 = nullptr, //
         expected_detail::enable_from_other_void_expected_t<E, U, G, G> * = nullptr>
     constexpr explicit expected(expected<U, G> &&rhs) //
