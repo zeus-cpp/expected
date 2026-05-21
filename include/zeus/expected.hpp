@@ -26,6 +26,13 @@ static_assert(false, "This expected variant requires C++17");
     #define ZEUS_EXPECTED_CONSTEXPR_DTOR
 #endif
 
+// Detect exception support
+#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
+    #define ZEUS_EXPECTED_THROW(e) (throw (e))
+#else
+    #define ZEUS_EXPECTED_THROW(e) ((void)(e), std::terminate())
+#endif
+
 #define ZEUS_EXPECTED_ABI_TAG expected_abi
 
 #define ZEUS_EXPECTED_NS_VERSION_CONCAT_EX(major, minor, patch) _v##major##_##minor##_##patch
@@ -1657,14 +1664,14 @@ public:
     {
         static_assert(std::is_copy_constructible_v<E>, "E must be copy constructible, by LWG-3843");
         if (!has_value())
-            throw bad_expected_access(error());
+            ZEUS_EXPECTED_THROW(bad_expected_access(error()));
         return val();
     }
     constexpr T &value() &
     {
         static_assert(std::is_copy_constructible_v<E>, "E must be copy constructible, by LWG-3843");
         if (!has_value())
-            throw bad_expected_access(std::as_const(error()));
+            ZEUS_EXPECTED_THROW(bad_expected_access(std::as_const(error())));
         return val();
     }
     constexpr const T &&value() const &&
@@ -1672,7 +1679,7 @@ public:
         static_assert(std::is_copy_constructible_v<E>, "E must be copy constructible, by LWG-3843");
         static_assert(std::is_constructible_v<E, decltype(std::move(error()))>, "E must be constructible from const E&&, by LWG-3843");
         if (!has_value())
-            throw bad_expected_access(std::move(error()));
+            ZEUS_EXPECTED_THROW(bad_expected_access(std::move(error())));
         return std::move(val());
     }
     constexpr T &&value() &&
@@ -1680,7 +1687,7 @@ public:
         static_assert(std::is_copy_constructible_v<E>, "E must be copy constructible, by LWG-3843");
         static_assert(std::is_constructible_v<E, decltype(std::move(error()))>, "E must be constructible from E&&, by LWG-3843");
         if (!has_value())
-            throw bad_expected_access(std::move(error()));
+            ZEUS_EXPECTED_THROW(bad_expected_access(std::move(error())));
         return std::move(val());
     }
 
@@ -2428,7 +2435,7 @@ public:
     {
         static_assert(std::is_copy_constructible_v<E>, "E must be copy constructible, by LWG-3940");
         if (!has_value())
-            throw bad_expected_access(err());
+            ZEUS_EXPECTED_THROW(bad_expected_access(err()));
     }
 
     constexpr void value() &&
@@ -2436,7 +2443,7 @@ public:
         static_assert(std::is_copy_constructible_v<E>, "E must be copy constructible, by LWG-3940");
         static_assert(std::is_move_constructible_v<E>, "E must be move constructible, by LWG-3940");
         if (!has_value())
-            throw bad_expected_access(std::move(err()));
+            ZEUS_EXPECTED_THROW(bad_expected_access(std::move(err())));
     }
 
     constexpr const E &error() const & noexcept //
