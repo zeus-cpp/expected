@@ -1,0 +1,6 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/zeus_expectedTargets.cmake")
+
+include(FindPackageHandleStandardArgs)
+check_required_components(zeus_expected)
