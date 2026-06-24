@@ -1,7 +1,7 @@
-project(test_no_exceptions)
+project(test_no_exceptions LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME} test_no_exceptions.cpp)
-target_link_libraries(${PROJECT_NAME} zeus::expected)
+target_link_libraries(${PROJECT_NAME} PRIVATE zeus::expected)
 
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /EHs-c-)
