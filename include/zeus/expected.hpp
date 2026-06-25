@@ -291,7 +291,8 @@ using enable_forward_t = std::enable_if_t<
     !std::is_same_v<expected<T, E>, expected_detail::remove_cvref_t<U>> &&                   //
     !expected_detail::is_specialization_v<expected_detail::remove_cvref_t<U>, unexpected> && //
     (!std::is_same_v<std::remove_cv_t<T>, bool> ||                                           // LWG-3836
-     !expected_detail::is_specialization_v<expected_detail::remove_cvref_t<U>, expected>)    //
+     !expected_detail::is_specialization_v<expected_detail::remove_cvref_t<U>, expected>) && //
+    !std::is_same_v<expected_detail::remove_cvref_t<U>, unexpect_t>                          // LWG-4222
     >;
 
 template<class T, class E, class U, class G, class UF, class GF>
