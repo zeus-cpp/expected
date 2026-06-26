@@ -235,14 +235,16 @@ template<>
 class bad_expected_access<void> : public std::exception
 {
 public:
-    virtual const char *what() const noexcept override { return "Bad expected access"; }
+    [[nodiscard]] const char *what() const noexcept override { return "Bad expected access"; }
 
 protected:
-    bad_expected_access()                                       = default;
-    bad_expected_access(const bad_expected_access &)            = default;
-    bad_expected_access(bad_expected_access &&)                 = default;
-    bad_expected_access &operator=(const bad_expected_access &) = default;
-    bad_expected_access &operator=(bad_expected_access &&)      = default;
+    // LWG-4031
+    bad_expected_access() noexcept                                       = default;
+    bad_expected_access(const bad_expected_access &) noexcept            = default;
+    bad_expected_access(bad_expected_access &&) noexcept                 = default;
+    bad_expected_access &operator=(const bad_expected_access &) noexcept = default;
+    bad_expected_access &operator=(bad_expected_access &&) noexcept      = default;
+    ~bad_expected_access() override                                      = default;
 };
 
 template<class E>
