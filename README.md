@@ -23,6 +23,7 @@ Implemented LWG Issues:
 - [x] [LWG-3877](https://wg21.link/lwg3877) incorrect constraints on const-qualified monadic overloads for `std::expected`
 - [x] [LWG-3886](https://wg21.link/lwg3886) Monad mo' problems
 - [x] [LWG-4031](https://wg21.link/lwg4031) `bad_expected_access<void>` member functions should be noexcept
+- [x] [LWG-4222](https://wg21.link/lwg4222) `expected` constructor from a single value missing a constraint
 
 Enhancements:
 
