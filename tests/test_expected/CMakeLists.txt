@@ -8,6 +8,7 @@ set(SOURCES
     lwg_3886_tests.cpp
     lwg_4031_tests.cpp
     lwg_4222_tests.cpp
+    lwg_4025_tests.cpp
 )
 
 find_package(Catch2 3 REQUIRED)
