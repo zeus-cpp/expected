@@ -24,6 +24,7 @@ Implemented LWG Issues:
 - [x] [LWG-3886](https://wg21.link/lwg3886) Monad mo' problems
 - [x] [LWG-4031](https://wg21.link/lwg4031) `bad_expected_access<void>` member functions should be noexcept
 - [x] [LWG-4222](https://wg21.link/lwg4222) `expected` constructor from a single value missing a constraint
+- [x] [LWG-4025](https://wg21.link/lwg4025) Move assignment operator of `std::expected<cv void, E>` should not be conditionally deleted
 
 Enhancements:
 
