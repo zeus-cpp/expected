@@ -130,6 +130,20 @@ inline constexpr bool is_move_assignable_or_void_v = is_void_or_v<T, std::is_mov
 template<class From, class To>
 inline constexpr bool is_nothrow_convertible_v = noexcept(static_cast<To>(std::declval<From>()));
 
+template<class T1, class T2, class = void>
+struct is_eq_result_to_bool_impl : std::false_type
+{
+};
+
+template<class T1, class T2>
+struct is_eq_result_to_bool_impl<T1, T2, std::void_t<decltype(std::declval<const T1 &>() == std::declval<const T2 &>())>>
+    : std::is_convertible<decltype(std::declval<const T1 &>() == std::declval<const T2 &>()), bool>
+{
+};
+
+template<class T1, class T2>
+inline constexpr bool is_eq_result_convertible_to_bool_v = is_eq_result_to_bool_impl<T1, T2>::value;
+
 } // namespace expected_detail
 
 template<class E>
@@ -2037,9 +2051,13 @@ public:
     }
 
     template<class T2, class E2>
-    [[nodiscard]] friend constexpr std::enable_if_t<!std::is_void_v<T2>, bool> operator==(
-        const expected &x, const expected<T2, E2> &y
-    ) noexcept(noexcept(*x == *y) && noexcept(x.error() == y.error()))
+    [[nodiscard]] friend constexpr std::enable_if_t<
+        !std::is_void_v<T2> &&
+            expected_detail::is_eq_result_convertible_to_bool_v<T, T2> &&
+            expected_detail::is_eq_result_convertible_to_bool_v<E, E2>,
+        bool
+    >
+    operator==(const expected &x, const expected<T2, E2> &y) noexcept(noexcept(*x == *y) && noexcept(x.error() == y.error()))
     {
         if (x.has_value() != y.has_value())
         {
@@ -2056,20 +2074,28 @@ public:
     }
 #if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class T2, class E2>
-    [[nodiscard]] friend constexpr std::enable_if_t<!std::is_void_v<T2>, bool> operator!=(
-        const expected &x, const expected<T2, E2> &y
-    ) noexcept(noexcept(x == y))
+    [[nodiscard]] friend constexpr std::enable_if_t<
+        !std::is_void_v<T2> &&
+            expected_detail::is_eq_result_convertible_to_bool_v<T, T2> &&
+            expected_detail::is_eq_result_convertible_to_bool_v<E, E2>,
+        bool
+    > operator!=(const expected &x, const expected<T2, E2> &y) noexcept(noexcept(x == y))
     {
         return !(x == y);
     }
 #endif
 
     template<class T2>
-    [[nodiscard]] friend constexpr bool operator==(const expected &x, const T2 &v) noexcept(noexcept(*x == v))
+    [[nodiscard]] friend constexpr std::enable_if_t<
+        !expected_detail::is_specialization_v<T2, zeus::expected> &&
+            !expected_detail::is_specialization_v<T2, zeus::unexpected> &&
+            expected_detail::is_eq_result_convertible_to_bool_v<T, T2>,
+        bool
+    > operator==(const expected &x, const T2 &v) noexcept(noexcept(*x == v))
     {
         if (x.has_value())
         {
-            return static_cast<bool>(*x == v);
+            return *x == v;
         }
         else
         {
@@ -2078,28 +2104,43 @@ public:
     }
 #if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class T2>
-    [[nodiscard]] friend constexpr bool operator!=(const expected &x, const T2 &v) noexcept(noexcept(x == v))
+    [[nodiscard]] friend constexpr std::enable_if_t<
+        !expected_detail::is_specialization_v<T2, zeus::expected> &&
+            !expected_detail::is_specialization_v<T2, zeus::unexpected> &&
+            expected_detail::is_eq_result_convertible_to_bool_v<T, T2>,
+        bool
+    > operator!=(const expected &x, const T2 &v) noexcept(noexcept(x == v))
     {
         return !(x == v);
     }
     template<class T2>
-    [[nodiscard]] friend constexpr std::enable_if_t<!expected_detail::is_specialization_v<T2, zeus::expected>, bool> operator==(
-        const T2 &v, const expected &x
-    ) noexcept(noexcept(x == v))
+    [[nodiscard]] friend constexpr std::enable_if_t<
+        !expected_detail::is_specialization_v<T2, zeus::expected> &&
+            !expected_detail::is_specialization_v<T2, zeus::unexpected> &&
+            expected_detail::is_eq_result_convertible_to_bool_v<T, T2>,
+        bool
+    >
+    operator==(const T2 &v, const expected &x) noexcept(noexcept(x == v))
     {
         return x == v;
     }
     template<class T2>
-    [[nodiscard]] friend constexpr std::enable_if_t<!expected_detail::is_specialization_v<T2, zeus::expected>, bool> operator!=(
-        const T2 &v, const expected &x
-    ) noexcept(noexcept(x == v))
+    [[nodiscard]] friend constexpr std::enable_if_t<
+        !expected_detail::is_specialization_v<T2, zeus::expected> &&
+            !expected_detail::is_specialization_v<T2, zeus::unexpected> &&
+            expected_detail::is_eq_result_convertible_to_bool_v<T, T2>,
+        bool
+    >
+    operator!=(const T2 &v, const expected &x) noexcept(noexcept(x == v))
     {
         return x != v;
     }
 #endif
 
     template<class E2>
-    [[nodiscard]] friend constexpr bool operator==(const expected &x, const unexpected<E2> &e) noexcept(noexcept(x.error() == e.error()))
+    [[nodiscard]] friend constexpr std::enable_if_t<expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator==(
+        const expected &x, const unexpected<E2> &e
+    ) noexcept(noexcept(x.error() == e.error()))
     {
         if (x.has_value())
         {
@@ -2107,22 +2148,28 @@ public:
         }
         else
         {
-            return static_cast<bool>(x.error() == e.error());
+            return x.error() == e.error();
         }
     }
 #if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class E2>
-    [[nodiscard]] friend constexpr bool operator!=(const expected &x, const unexpected<E2> &e) noexcept(noexcept(x == e))
+    [[nodiscard]] friend constexpr std::enable_if_t<expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator!=(
+        const expected &x, const unexpected<E2> &e
+    ) noexcept(noexcept(x == e))
     {
         return !(x == e);
     }
     template<class E2>
-    [[nodiscard]] friend constexpr bool operator==(const unexpected<E2> &e, const expected &x) noexcept(noexcept(x == e))
+    [[nodiscard]] friend constexpr std::enable_if_t<expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator==(
+        const unexpected<E2> &e, const expected &x
+    ) noexcept(noexcept(x == e))
     {
         return x == e;
     }
     template<class E2>
-    [[nodiscard]] friend constexpr bool operator!=(const unexpected<E2> &e, const expected &x) noexcept(noexcept(x == e))
+    [[nodiscard]] friend constexpr std::enable_if_t<expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator!=(
+        const unexpected<E2> &e, const expected &x
+    ) noexcept(noexcept(x == e))
     {
         return x != e;
     }
@@ -2743,31 +2790,37 @@ public:
     }
 
     template<class T2, class E2>
-    [[nodiscard]] friend constexpr std::enable_if_t<std::is_void_v<T2>, bool> operator==(
-        const expected &x, const expected<T2, E2> &y
-    ) noexcept(noexcept(x.error() == y.error()))
+    [[nodiscard]] friend constexpr std::enable_if_t<std::is_void_v<T2> && expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool>
+    operator==(const expected &x, const expected<T2, E2> &y) noexcept(noexcept(x.error() == y.error()))
     {
         if (x.has_value() != y.has_value())
         {
             return false;
         }
+        else if (x.has_value())
+        {
+            return true;
+        }
         else
         {
-            return x.has_value() || static_cast<bool>(x.error() == y.error());
+            return x.error() == y.error();
         }
     }
 #if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class T2, class E2>
-    [[nodiscard]] friend constexpr std::enable_if_t<std::is_void_v<T2>, bool> operator!=(
-        const expected &x, const expected<T2, E2> &y
-    ) noexcept(noexcept(x == y))
+    [[nodiscard]] friend constexpr std::
+        enable_if_t<std::is_void_v<T2> && expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator!=(
+            const expected &x, const expected<T2, E2> &y
+        ) noexcept(noexcept(x == y))
     {
         return !(x == y);
     }
 #endif
 
     template<class E2>
-    [[nodiscard]] friend constexpr bool operator==(const expected &x, const unexpected<E2> &e) noexcept(noexcept(x.error() == e.error()))
+    [[nodiscard]] friend constexpr std::enable_if_t<expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator==(
+        const expected &x, const unexpected<E2> &e
+    ) noexcept(noexcept(x.error() == e.error()))
     {
         if (x.has_value())
         {
@@ -2775,22 +2828,28 @@ public:
         }
         else
         {
-            return static_cast<bool>(x.error() == e.error());
+            return x.error() == e.error();
         }
     }
 #if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class E2>
-    [[nodiscard]] friend constexpr bool operator!=(const expected &x, const unexpected<E2> &e) noexcept(noexcept(x == e))
+    [[nodiscard]] friend constexpr std::enable_if_t<expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator!=(
+        const expected &x, const unexpected<E2> &e
+    ) noexcept(noexcept(x == e))
     {
         return !(x == e);
     }
     template<class E2>
-    [[nodiscard]] friend constexpr bool operator==(const unexpected<E2> &e, const expected &x) noexcept(noexcept(x == e))
+    [[nodiscard]] friend constexpr std::enable_if_t<expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator==(
+        const unexpected<E2> &e, const expected &x
+    ) noexcept(noexcept(x == e))
     {
         return x == e;
     }
     template<class E2>
-    [[nodiscard]] friend constexpr bool operator!=(const unexpected<E2> &e, const expected &x) noexcept(noexcept(x == e))
+    [[nodiscard]] friend constexpr std::enable_if_t<expected_detail::is_eq_result_convertible_to_bool_v<E, E2>, bool> operator!=(
+        const unexpected<E2> &e, const expected &x
+    ) noexcept(noexcept(x == e))
     {
         return x != e;
     }
