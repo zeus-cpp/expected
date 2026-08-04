@@ -13,6 +13,7 @@ Implemented C++ Standard Proposals:
 - [x] [P0323R12](https://wg21.link/p0323r12) `<expected>`
 - [x] [P2505R5](https://wg21.link/p2505r5) Monadic Functions For expected
 - [x] [P2549R1](https://wg21.link/p2549r1) `std::unexpected<E>` should have `error()` as member accessor
+- [x] [P3379R0](https://wg21.link/p3379r0) Constrain std::expected equality operators
 
 Implemented LWG Issues:
 
@@ -25,6 +26,7 @@ Implemented LWG Issues:
 - [x] [LWG-4031](https://wg21.link/lwg4031) `bad_expected_access<void>` member functions should be noexcept
 - [x] [LWG-4222](https://wg21.link/lwg4222) `expected` constructor from a single value missing a constraint
 - [x] [LWG-4025](https://wg21.link/lwg4025) Move assignment operator of `std::expected<cv void, E>` should not be conditionally deleted
+- [x] [LWG-4366](https://wg21.link/lwg4366) Heterogeneous comparison of `expected` may be ill-formed
 
 Enhancements:
 
