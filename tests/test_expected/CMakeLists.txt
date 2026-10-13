@@ -10,6 +10,7 @@ set(SOURCES
     swap_exception_tests.cpp
     equality_tests.cpp
     equality_noexcept_tests.cpp
+    unexpected_equality_tests.cpp
     p3379_tests.cpp
     lwg_3886_tests.cpp
     lwg_4031_tests.cpp
