@@ -251,11 +251,13 @@ public:
         );
         return lhs.error() == rhs.error();
     }
+#if ZEUS_EXPECTED_CPLUSPLUS < 202'002L
     template<class E2>
-    friend constexpr bool operator!=(const unexpected &lhs, const unexpected<E2> &rhs) noexcept(noexcept(lhs.error() != rhs.error()))
+    friend constexpr bool operator!=(const unexpected &lhs, const unexpected<E2> &rhs) noexcept(noexcept(lhs == rhs))
     {
-        return lhs.error() != rhs.error();
+        return !(lhs == rhs);
     }
+#endif
 
 private:
     E m_val;
