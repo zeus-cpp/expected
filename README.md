@@ -27,6 +27,7 @@ Implemented LWG Issues:
 - [x] [LWG-4222](https://wg21.link/lwg4222) `expected` constructor from a single value missing a constraint
 - [x] [LWG-4025](https://wg21.link/lwg4025) Move assignment operator of `std::expected<cv void, E>` should not be conditionally deleted
 - [x] [LWG-4366](https://wg21.link/lwg4366) Heterogeneous comparison of `expected` may be ill-formed
+- [x] [LWG-3891](https://wg21.link/lwg3891) LWG 3870 breaks `std::expected<cv T, E>`
 
 Enhancements:
 
