@@ -597,9 +597,11 @@ struct storage_base
 
     union
     {
-        T    m_val;
-        E    m_unexpect;
-        char m_dummy;
+        // LWG-3891: store remove_cv_t<T>, construct/destroy it as such, and
+        // access it through a cv-qualified glvalue elsewhere.
+        std::remove_cv_t<T> m_val;
+        E                   m_unexpect;
+        char                m_dummy;
     };
     bool m_has_val;
 };
@@ -710,9 +712,11 @@ struct storage_base<T, E, false>
 
     union
     {
-        T    m_val;
-        E    m_unexpect;
-        char m_dummy;
+        // LWG-3891: store remove_cv_t<T>, construct/destroy it as such, and
+        // access it through a cv-qualified glvalue elsewhere.
+        std::remove_cv_t<T> m_val;
+        E                   m_unexpect;
+        char                m_dummy;
     };
     bool m_has_val;
 };
@@ -1299,16 +1303,16 @@ class expected
     static_assert(expected_detail::is_value_type_valid_v<T>);
     static_assert(expected_detail::is_error_type_valid_v<E>);
 
-    constexpr T       *valptr() noexcept { return std::addressof(this->m_val); }
-    constexpr const T *valptr() const noexcept { return std::addressof(this->m_val); }
-    constexpr E       *errptr() noexcept { return std::addressof(this->m_unexpect); }
-    constexpr const E *errptr() const noexcept { return std::addressof(this->m_unexpect); }
+    constexpr std::remove_cv_t<T>       *valptr() noexcept { return std::addressof(this->m_val); }
+    constexpr const std::remove_cv_t<T> *valptr() const noexcept { return std::addressof(this->m_val); }
+    constexpr E                         *errptr() noexcept { return std::addressof(this->m_unexpect); }
+    constexpr const E                   *errptr() const noexcept { return std::addressof(this->m_unexpect); }
 
-    constexpr T &val() noexcept { return this->m_val; }
-    constexpr E &err() noexcept { return this->m_unexpect; }
+    constexpr std::remove_cv_t<T> &val() noexcept { return this->m_val; }
+    constexpr E                   &err() noexcept { return this->m_unexpect; }
 
-    constexpr const T &val() const noexcept { return this->m_val; }
-    constexpr const E &err() const noexcept { return this->m_unexpect; }
+    constexpr const std::remove_cv_t<T> &val() const noexcept { return this->m_val; }
+    constexpr const E                   &err() const noexcept { return this->m_unexpect; }
 
     using impl_base = expected_detail::move_assign_base<T, E>;
     using ctor_base = expected_detail::default_ctor_base<T, E>;
@@ -1711,13 +1715,14 @@ public:
             }
             else
             {
-                T tmp(std::move(this->m_val));
+                // LWG-3891: the internal backup is considered cv-unqualified.
+                std::remove_cv_t<T> tmp(std::move(this->m_val));
                 if constexpr (!std::is_trivially_destructible_v<T>)
                 {
                     this->m_val.~T();
                 }
 
-                expected_detail::ReinitGuard<T> guard {std::addressof(this->m_val), std::addressof(tmp)};
+                expected_detail::ReinitGuard<std::remove_cv_t<T>> guard {std::addressof(this->m_val), std::addressof(tmp)};
                 expected_detail::construct_at(std::addressof(this->error()), std::move(rhs.error()));
                 guard._target = nullptr;
 
