@@ -13,6 +13,7 @@ set(SOURCES
     unexpected_equality_tests.cpp
     p3379_tests.cpp
     lwg_3886_tests.cpp
+    lwg_3891_tests.cpp
     lwg_4031_tests.cpp
     lwg_4222_tests.cpp
     lwg_4025_tests.cpp
